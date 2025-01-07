@@ -91,6 +91,7 @@ export function make_move(move, board, game_state) {
 	if (board[move.from] > 0) game_state.white_in_check = false
 	else game_state.black_in_check = false
 
+	// invalidate castling
 	if (board[move.from] == P.white_king) {
 		game_state.woo = false
 		game_state.wooo = false
@@ -106,6 +107,7 @@ export function make_move(move, board, game_state) {
 		board[enpassant_sq] = 0
 		board[move.to] = board[move.from]
 		board[move.from] = 0
+		move.capture = true
 	}
 	// castling
 	else if (move.from == S.e1 && move.to == S.g1 && board[move.from] == P.white_king) {
@@ -134,6 +136,7 @@ export function make_move(move, board, game_state) {
 		board[move.to] = color(board[move.from]) * P.queen
 		board[move.from] = 0
 	} else {
+		if (board[move.to] != 0) move.capture = true
 		board[move.to] = board[move.from]
 		board[move.from] = 0
 	}

@@ -30,7 +30,7 @@ onMount(() => {
 		let connected_to_id = con.peer
 		storage.set('peer', peer)
 		storage.set('connection', con)
-		goto(`/p2p/${connected_to_id}`)
+		goto(`#/p2p/${connected_to_id}`)
 	})
 })
 

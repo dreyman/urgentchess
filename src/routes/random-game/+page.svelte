@@ -5,7 +5,7 @@ import { Game as ChessGame, Clock } from '$lib/app/model.svelte.js'
 
 let game = $state(new ChessGame(new Clock(180_000, 180_000, 180_000, 1000)))
 let stopped = $state(false)
-let speed = 10
+let speed = 100
 let interval
 
 function start() {

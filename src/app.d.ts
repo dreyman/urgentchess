@@ -10,8 +10,9 @@ declare global {
 	}
 
 	interface Move {
-		from: number;
-		to: number;
+		from: number
+		to: number
+		capture: boolean | undefined
 	}
 
 	type Color = -1 | 1;

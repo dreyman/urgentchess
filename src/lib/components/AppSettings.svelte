@@ -46,7 +46,7 @@ let active_tab = $state('board')
 {#snippet game_settings()}
 <div class="flex flex-col">
 	<label>
-		<input type="checkbox" bind:checked={app_config.game.board_sound} />
+		<input type="checkbox" bind:checked={app_config.game.board_sounds} />
 		Board sounds
 	</label>
 	<label>

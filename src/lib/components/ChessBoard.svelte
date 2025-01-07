@@ -18,13 +18,23 @@ import move_mp3 from '$lib/audio/move.mp3'
 import capture_mp3 from '$lib/audio/capture.mp3'
 
 let { board, on_move, side = 0, orientation: ori, last_move, children } = $props()
+// let move_sound = new Audio(move_mp3)
+// let capture_sound = new Audio(capture_mp3)
 
 $effect(() => {
-	if (!last_move) side = 1
-	else side = board[last_move.to] > 0 ? -1 : 1
+	if (side == 0) {
+		side = !last_move ? 1 : board[last_move.to] > 0 ? -1 : 1
+	}
 
 	if (!ori && side == 0) ori = Math.random() > 0.5 ? 1 : 0
 	else if (!ori) ori = side
+})
+
+$effect(() => {
+	if (last_move && app_config.game.board_sounds) {
+		if (last_move.capture) new Audio(capture_mp3).play()
+		else new Audio(move_mp3).play()
+	}
 })
 
 let selected_piece = $state(-1)
@@ -92,15 +102,8 @@ function board_dnd(el) {
 }
 
 function apply_move(move) {
-	let is_capture = board[move.to] != 0
 	let moved = on_move(move)
-	if (moved) {
-		selected_piece = -1
-		if (app_config.game.board_sound) {
-			if (is_capture) new Audio(capture_mp3).play()
-			else new Audio(move_mp3).play()
-		}
-	}
+	if (moved) selected_piece = -1
 }
 
 function get_square_idx({ x, y }) {
@@ -137,11 +140,11 @@ function get_symbol_for_piece(piece) {
 					x={file}
 					y={rank}
 					fill={sq_idx == selected_piece
-						? `color-mix(in oklab, ${square_color} 50%, ${config.colors.selected_piece} 70%`
+						? `color-mix(in srgb, ${square_color} 50%, ${config.colors.selected_piece} 70%`
 						: config.highlight_last_move &&
 							  last_move &&
 							  (last_move.from == sq_idx || last_move.to == sq_idx)
-							? `color-mix(in oklab, ${square_color} 50%, ${config.colors.last_move} 70%`
+							? `color-mix(in srgb, ${square_color} 50%, ${config.colors.last_move} 70%`
 							: square_color}
 					id={file + rank}
 				/>

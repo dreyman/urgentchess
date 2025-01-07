@@ -17,9 +17,11 @@ function toggle_about() {}
 
 <header class="py-2">
 	<ul class="mx-auto flex h-full max-w-5xl items-center justify-center gap-8 px-8">
-		<li><a href="/">home</a></li>
-		<li><button onclick={toggle_settings}>settings</button></li>
-		<li><button onclick={toggle_about}>about</button></li>
+		<li><a href="/">Home</a></li>
+		<li><button onclick={toggle_settings}>Settings</button></li>
+		<li><button onclick={toggle_about}>About</button></li>
+		<li><a href="#/random-game">Random game</a></li>
+		<li><a href="#/playground">Playground</a></li>
 	</ul>
 </header>
 
@@ -52,7 +54,7 @@ header {
 	left: 0;
 	width: 100%;
 	background: #3c3c3c;
-	box-shadow: var(--draggable-box-shadow);
+	box-shadow: var(--draggable-container-shadow);
 }
 
 header > * button:hover {

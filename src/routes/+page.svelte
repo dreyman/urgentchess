@@ -8,7 +8,7 @@ function new_game(data) {
 	storage.set('game', data.game)
 	storage.set('side', data.side)
 	storage.set('game_data', data.game_data)
-	goto('/p2p')
+	goto('#/p2p')
 }
 </script>
 

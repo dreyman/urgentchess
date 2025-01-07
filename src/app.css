@@ -3,9 +3,9 @@
 @import 'tailwindcss/utilities';
 
 html {
-	/*--draggable-box-shadow: color-mix(in srgb, #000 30%, transparent) 0 1px 2px 0,
+	/*--draggable-container-shadow: color-mix(in srgb, #000 30%, transparent) 0 1px 2px 0,
 		color-mix(in srgb, #000 15%, transparent) 0 2px 6px 2px;*/
-	--draggable-box-shadow: color-mix(in srgb, #000 30%, transparent) 0 2px 6px 2px,
+	--draggable-container-shadow: color-mix(in srgb, #000 30%, transparent) 0 2px 6px 2px,
 		color-mix(in srgb, #000 15%, transparent) 0 2px 6px 2px;
 }
 

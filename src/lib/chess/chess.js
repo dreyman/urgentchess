@@ -70,6 +70,7 @@ Piece.black_king = Color.black * Piece.king
  * @typedef {Object} Move
  * @property {number} from
  * @property {number} to
+ * @property {boolean | undefined} capture
  */
 
 /**

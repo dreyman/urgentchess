@@ -129,7 +129,7 @@ function draggable(el) {
 <div
 	bind:this={el}
 	use:draggable
-	class="draggable-box"
+	class="draggable-container"
 	style:width={width == 'auto' ? width : width + 'px'}
 	style:height={height == 'auto' ? height : height + 'px'}
 	style:z-index={zindex}
@@ -147,12 +147,12 @@ function draggable(el) {
 </div>
 
 <style>
-.draggable-box {
+.draggable-container {
 	position: absolute;
 	background: #272727;
 	overflow: auto;
 	border-radius: 8px 8px 0 0;
-	box-shadow: var(--draggable-box-shadow);
+	box-shadow: var(--draggable-container-shadow);
 }
 
 .title {
