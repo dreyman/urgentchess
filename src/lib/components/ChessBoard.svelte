@@ -1,4 +1,5 @@
-<!-- 
+<script>
+/*
 TODO
 + the piece being dragged should always be rendered on top of all other pieces
 + should be possible to make a move by clicking on squares (only dnd works atm)
@@ -10,10 +11,11 @@ TODO
 - mobile touch support for dnd
 - move piece svg symbol's to a separate file (and use them as snippets?)
 - 2 more orientations
--->
-<script>
+*/
 import { piece_name } from '$lib/chess/util.js'
 import { app_config } from '$lib/app/appconfig.svelte.js'
+import move_sound from '$lib/audio/move.mp3'
+import capture_sound from '$lib/audio/capture.mp3'
 
 let { board, on_move, side = 0, orientation: ori, last_move, children } = $props()
 
@@ -90,8 +92,15 @@ function board_dnd(el) {
 }
 
 function apply_move(move) {
+	let is_capture = board[move.to] != 0
 	let moved = on_move(move)
-	if (moved) selected_piece = -1
+	if (moved) {
+		selected_piece = -1
+		if (app_config.game.board_sound) {
+			if (is_capture) new Audio(capture_sound).play()
+			else new Audio(move_sound).play()
+		}
+	}
 }
 
 function get_square_idx({ x, y }) {

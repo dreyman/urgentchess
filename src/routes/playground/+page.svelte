@@ -2,7 +2,7 @@
 import * as util from '$lib/chess/util.js'
 import { app_config } from '$lib/app/appconfig.svelte.js'
 import { Game as ChessGame, Clock } from '$lib/app/model.svelte.js'
-import { Connection } from '$lib/app/fakepeer.js'
+// import { Connection } from '$lib/app/temp/fakepeer.js'
 import Game from '$lib/components/Game.svelte'
 import P2PChessGame from '$lib/components/P2PChessGame.svelte'
 import CreateGameForm from '$lib/components/CreateGameForm.svelte'

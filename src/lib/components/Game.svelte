@@ -9,6 +9,7 @@ import Time from '$lib/components/Time.svelte'
 let { game, side = 0, onmove = () => {} } = $props()
 let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
 
+/** @param {Move} move */
 function on_move(move) {
 	// FIXME shouldn't be possible to move if clock is not running
 	if (game.is_legal_move(move)) {

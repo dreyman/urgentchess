@@ -1,6 +1,4 @@
 <script>
-import * as util from '$lib/chess/util.js'
-import * as chess from '$lib/chess/chess.js'
 import { Game, Clock } from '$lib/app/model.svelte.js'
 
 let { onsubmit, className } = $props()
@@ -35,12 +33,6 @@ function submit() {
 </div>
 
 <style>
-.create-game-form {
-}
-
-.select-side-group {
-}
-
 .submit,
 .select-side-group > button {
 	min-width: 7rem;

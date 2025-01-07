@@ -19,7 +19,12 @@ let {
 	on_close,
 	children
 } = $props()
-let el, header, content
+/** @type {HTMLElement} */
+let el
+/** @type {HTMLElement} */
+let header
+/** @type {HTMLElement} */
+let content
 let zindex = $state(10)
 
 $effect(() => {
@@ -37,10 +42,12 @@ onMount(() => {
 	else el.style.minHeight = 'fit-content'
 })
 
+/**
+ * @param {HTMLElement} el
+ */
 function draggable(el) {
 	if (!header) return
 	header.onmousedown = start_drag
-	// if (!header) el.onmousedown = start_drag
 
 	el.style.maxWidth = window.innerWidth - el.offsetLeft - 5 + 'px'
 	el.style.maxHeight = window.innerHeight - el.offsetTop - 5 + 'px'
@@ -64,6 +71,9 @@ function draggable(el) {
 		document.onmousemove = drag
 	}
 
+	/**
+	 * @param {MouseEvent} e
+	 */
 	function drag(e) {
 		e.preventDefault()
 		// if (el.offsetLeft > window.innerWidth - el.clientWidth) {
@@ -147,7 +157,6 @@ function draggable(el) {
 
 .title {
 	background: #3c3c3c;
-	/*	border-bottom: 1px solid #5d5d5d;*/
 	color: #c6c6c6;
 	text-align: center;
 	cursor: move;

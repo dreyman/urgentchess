@@ -44,10 +44,16 @@ let active_tab = $state('board')
 {/snippet}
 
 {#snippet game_settings()}
+<div class="flex flex-col">
+	<label>
+		<input type="checkbox" bind:checked={app_config.game.board_sound} />
+		Board sounds
+	</label>
 	<label>
 		<input type="checkbox" bind:checked={app_config.game.random_move} />
 		Make random move
 	</label>
+</div>
 {/snippet}
 
 <style>

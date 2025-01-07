@@ -12,6 +12,7 @@ const default_config = {
 		piece_size: 0,
 	},
 	game: {
+		board_sound: true,
 		random_move: false,
 	}
 }
