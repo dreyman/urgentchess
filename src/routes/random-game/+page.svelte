@@ -1,15 +1,21 @@
 <script>
 import Game from '$lib/components/Game.svelte'
+import Container from '$lib/components/Container.svelte'
 import { Game as ChessGame, Clock } from '$lib/app/model.svelte.js'
 
-let game = $state(new ChessGame(new Clock(180_000, 180_000, 1000)))
+let game = $state(new ChessGame(new Clock(180_000, 180_000, 180_000, 1000)))
 let stopped = $state(false)
-let speed = 50
+let speed = 10
 let interval
 
 function start() {
 	stopped = false
-	interval = setInterval(() => make_random_move(game), speed)
+	interval = setInterval(() => {
+		make_random_move(game)
+		if (game.result !== null) {
+			stop()
+		}
+	}, speed)
 }
 
 function stop() {
@@ -18,7 +24,7 @@ function stop() {
 }
 
 function reset() {
-	game = new ChessGame(new Clock(180_000, 180_000, 1000))
+	game = new ChessGame(new Clock(180_000, 180_000, 180_000, 1000))
 	stopped = false
 }
 
@@ -33,24 +39,32 @@ function make_random_move(game) {
 }
 </script>
 
-<div class="w-full md:w-128">
+<Container
+	title="Game"
+	resize="horizontal"
+	minwidth={100}
+	width={500}
+	height="auto"
+	left="center"
+	top="center"
+>
 	<Game {game} side={0} />
-</div>
+</Container>
 {#if game.moves.length == 0}
 	<button
 		onclick={start}
-		class="w-full bg-green-600 py-4 text-2xl font-bold text-white hover:bg-green-400">START</button
+		class="mt-10 w-full bg-green-600 py-4 text-2xl font-bold text-white hover:bg-green-400">START</button
 	>
 {:else if !stopped}
 	<button
 		onclick={stop}
-		class="w-full bg-red-600 py-4 text-2xl font-bold text-white hover:bg-red-400">STOP</button
+		class="mt-10 w-full bg-red-600 py-4 text-2xl font-bold text-white hover:bg-red-400">STOP</button
 	>
 {/if}
 {#if stopped}
 	<button
 		onclick={reset}
-		class="w-full bg-orange-600 py-4 text-2xl font-bold text-white hover:bg-orange-400"
+		class="mt-10 w-full bg-orange-600 py-4 text-2xl font-bold text-white hover:bg-orange-400"
 		>RESET</button
 	>
 {/if}

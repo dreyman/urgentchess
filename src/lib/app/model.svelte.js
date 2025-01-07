@@ -60,15 +60,25 @@ export class Game {
 			return false
 		}
 		util.make_move(move, this.board, this.state)
+
 		if (this.moves.length == 2) this.clock.start()
 		else if (this.moves.length > 2) this.clock.toggle()
+
 		this.valid_moves = chess.get_moves(this.board, this.state)
+
 		if (this.valid_moves.length == 0) {
 			this.clock.stop()
 			if (this.state.white_in_check) this.checkmate_white = true
 			else if (this.state.black_in_check) this.checkmate_black = true
 			else this.stalemate = true
 		}
+
+		// automatic draw if only two kings are left on the board
+		let other_piece = this.board.findIndex(p => p != 0 && p != chess.Piece.black_king && p != chess.Piece.white_king)
+		if (other_piece == -1) {
+			this.end_with_draw()
+		}
+
 		return true
 	}
 

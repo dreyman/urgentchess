@@ -14,8 +14,8 @@ TODO
 */
 import { piece_name } from '$lib/chess/util.js'
 import { app_config } from '$lib/app/appconfig.svelte.js'
-import move_sound from '$lib/audio/move.mp3'
-import capture_sound from '$lib/audio/capture.mp3'
+import move_mp3 from '$lib/audio/move.mp3'
+import capture_mp3 from '$lib/audio/capture.mp3'
 
 let { board, on_move, side = 0, orientation: ori, last_move, children } = $props()
 
@@ -48,6 +48,7 @@ function board_dnd(el) {
 
 	function on_drag_start(e) {
 		if (e.target.dataset.draggable == 'true') {
+			e.preventDefault()
 			let square = +e.target.dataset.square
 			if (selected_piece == square) selected_piece = -1
 			else selected_piece = square
@@ -59,7 +60,6 @@ function board_dnd(el) {
 			drag_el.setAttributeNS(null, 'x', mouse.x - 0.5)
 			drag_el.setAttributeNS(null, 'y', mouse.y - 0.5)
 			dragging = true
-			e.preventDefault()
 		}
 	}
 
@@ -97,8 +97,8 @@ function apply_move(move) {
 	if (moved) {
 		selected_piece = -1
 		if (app_config.game.board_sound) {
-			if (is_capture) new Audio(capture_sound).play()
-			else new Audio(move_sound).play()
+			if (is_capture) new Audio(capture_mp3).play()
+			else new Audio(move_mp3).play()
 		}
 	}
 }
