@@ -29,6 +29,7 @@ let zindex = $state(10)
 
 $effect(() => {
 	if (left == 'center') {
+		// FIXME mb it's better to use window from 'svelte/reactivity' here
 		left = window.innerWidth / 2 - el.clientWidth / 2 + 'px'
 	}
 	if (top == 'center') {

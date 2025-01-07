@@ -12,7 +12,14 @@ import Container from '$lib/components/Container.svelte'
 let time = 12 * 60_000
 let game = new ChessGame(new Clock(time, time, time, 2_000))
 // let side = Math.random() > 0.5 ? 1 : -1
-let side = 0
+let side = $state(0)
+
+$effect(() => {
+	side = !game.last_move || game.board[game.last_move.to] < 0 ? 1 : -1
+})
+
+function onmove() {
+}
 </script>
 
 <Container
@@ -24,8 +31,7 @@ let side = 0
 	left="center"
 	top="center"
 >
-	<!-- <Game {game} {side} /> -->
-	<Game {game} {side} />
+	<Game {game} {side} {onmove} />
 </Container>
 
 <style>

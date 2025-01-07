@@ -8,32 +8,30 @@ TODO
 - premove
 + shadow/ghost of the piece being moved
 - animations
-- mobile touch support for dnd
++ mobile touch support for dnd
+- add settings per board (cog icon in the title)
+- add mute board button in the title
 - move piece svg symbol's to a separate file (and use them as snippets?)
 - 2 more orientations
 */
 import { piece_name } from '$lib/chess/util.js'
 import { app_config } from '$lib/app/appconfig.svelte.js'
-import move_mp3 from '$lib/audio/move.mp3'
-import capture_mp3 from '$lib/audio/capture.mp3'
+import capture_sound from '$lib/audio/capture.mp3'
+import move_sound from '$lib/audio/move.mp3'
 
 let { board, on_move, side = 0, orientation: ori, last_move, children } = $props()
-// let move_sound = new Audio(move_mp3)
-// let capture_sound = new Audio(capture_mp3)
+// let move_audio = new Audio(move_sound)
+// let capture_audio = new Audio(capture_sound)
 
 $effect(() => {
-	if (side == 0) {
-		side = !last_move ? 1 : board[last_move.to] > 0 ? -1 : 1
-	}
-
 	if (!ori && side == 0) ori = Math.random() > 0.5 ? 1 : 0
 	else if (!ori) ori = side
 })
 
 $effect(() => {
 	if (last_move && app_config.game.board_sounds) {
-		if (last_move.capture) new Audio(capture_mp3).play()
-		else new Audio(move_mp3).play()
+		if (last_move.capture) new Audio(capture_sound).play()
+		else new Audio(move_sound).play()
 	}
 })
 
@@ -55,6 +53,11 @@ function board_dnd(el) {
 	el.addEventListener('mousemove', on_drag)
 	el.addEventListener('mouseup', on_drag_end)
 	el.addEventListener('mouseleave', on_drag_end)
+	el.addEventListener('touchstart', on_drag_start)
+	el.addEventListener('touchmove', on_drag)
+	el.addEventListener('touchend', on_drag_end)
+	el.addEventListener('touchleave', on_drag_end)
+	el.addEventListener('touchcancel', on_drag_end)
 
 	function on_drag_start(e) {
 		if (e.target.dataset.draggable == 'true') {
@@ -94,6 +97,7 @@ function board_dnd(el) {
 
 	function getMousePosition(evt) {
 		let { e, a, f, d } = board_svg.getScreenCTM()
+		if (evt.changedTouches) evt = evt.changedTouches[0]
 		return {
 			x: (evt.clientX - e) / a,
 			y: (evt.clientY - f) / d
