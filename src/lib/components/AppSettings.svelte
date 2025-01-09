@@ -74,7 +74,7 @@ button {
 }
 
 .tabs > li.active {
-	box-shadow: inset 0 -2px 0 0px #7babf8;
-	color: #7babf8;
+	box-shadow: inset 0 -3px 0 0px #7babf8;
+	color: #a8c7faff;
 }
 </style>

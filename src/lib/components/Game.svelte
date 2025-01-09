@@ -1,6 +1,3 @@
-<!-- 
-TODO:
--->
 <script>
 import ChessBoard from '$lib/components/ChessBoard.svelte'
 import Time from '$lib/components/Time.svelte'

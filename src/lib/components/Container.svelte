@@ -7,6 +7,9 @@ TODO:
  */
 import { onMount } from 'svelte'
 import { scale, fade } from 'svelte/transition'
+import Icon from '$lib/icons/Icon.svelte'
+import Cross from '$lib/icons/cross.svg.svelte'
+
 let {
 	title,
 	minwidth = 200,
@@ -16,7 +19,7 @@ let {
 	top = '10%',
 	left = '10%',
 	resize = 'both',
-	on_close,
+	onclose,
 	children
 } = $props()
 /** @type {HTMLElement} */
@@ -141,8 +144,14 @@ function draggable(el) {
 	out:fade={{ duration: 150 }}
 >
 	{#if title}
-		<h3 bind:this={header} class="title">{title}</h3>
-		<!-- TODO add on_close prop & close button here -->
+		<h3 bind:this={header} class="title">
+			<span>{title}</span>
+			{#if onclose}
+				<button onclick={onclose} class="close-btn rounded-full w-5 h-5">
+					<Icon Icon={Cross} />
+				</button>
+			{/if}
+		</h3>
 	{/if}
 	<div bind:this={content}>{@render children()}</div>
 </div>
@@ -161,5 +170,10 @@ function draggable(el) {
 	color: #c6c6c6;
 	text-align: center;
 	cursor: move;
+}
+
+.close-btn {
+	position: absolute;
+	right: 0.35rem;
 }
 </style>
