@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
-import { get_board, Square as S, empty_state, starting_position, make_move } from './util'
-import { Piece as P, create_state, get_moves, same_diagonal } from './chess.js'
+import { get_board, Square as S, empty_state, initial_position, apply_move } from './util'
+import { Piece as P, create_state, get_moves } from './chess.js'
 
 test('king is in check: can only block', () => {
 	let board = get_board({
@@ -39,12 +39,12 @@ test('queen diag mvmnt', () => {
 })
 
 test('checkmate => no legal moves', () => {
-	let board = starting_position()
+	let board = initial_position()
 	let state = create_state(board, [])
-	make_move({ from: S.f2, to: S.f4 }, board, state)
-	make_move({ from: S.e7, to: S.e6 }, board, state)
-	make_move({ from: S.g2, to: S.g4 }, board, state)
-	make_move({ from: S.d8, to: S.h4 }, board, state)
+	apply_move({ from: S.f2, to: S.f4 }, board, state)
+	apply_move({ from: S.e7, to: S.e6 }, board, state)
+	apply_move({ from: S.g2, to: S.g4 }, board, state)
+	apply_move({ from: S.d8, to: S.h4 }, board, state)
 
 	let moves = get_moves(board, state)
 

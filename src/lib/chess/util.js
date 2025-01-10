@@ -3,30 +3,13 @@ import { Piece as P, Color } from './chess.js'
 /** @import {Move} from './chess.js'; */
 
 /**
- * @typedef {0 | 1 | 2 | 3 | 4} Square
- */
-
-/*
-56 57 58 59 60 61 62 63
-48 49 50 51 52 53 54 55
-40 41 42 43 44 45 46 47
-32 33 34 35 36 37 38 39
-24 25 26 27 28 29 30 31
-16 17 18 19 20 21 22 23
- 8  9 10 11 12 13 14 15
- 0  1  2  3  4  5  6  7
-*/
-
-/**
  * @returns {number[]}
  */
 export function empty_board() {
 	return new Array(64).fill(0)
 }
 
-/**
- * @returns {GameState}
- */
+/** @returns {GameState} */
 export function empty_state() {
 	return {
 		moves: [],
@@ -41,10 +24,8 @@ export function empty_state() {
 	}
 }
 
-/**
- * @returns {number[]}
- */
-export function starting_position() {
+/** @returns {number[]} */
+export function initial_position() {
 	let b = empty_board()
 	b[0] = P.white_rook
 	b[1] = P.white_knight
@@ -81,13 +62,12 @@ export function get_board(cfg) {
 	return board
 }
 
-// FIXME move this func to chess.js
 /**
  * @param {Move} move
  * @param {number[]} board
  * @param {GameState} game_state
  */
-export function make_move(move, board, game_state) {
+export function apply_move(move, board, game_state) {
 	if (board[move.from] > 0) game_state.white_in_check = false
 	else game_state.black_in_check = false
 
@@ -100,6 +80,14 @@ export function make_move(move, board, game_state) {
 		game_state.boo = false
 		game_state.booo = false
 		game_state.bking = move.to
+	} else if (game_state.wooo && move.from == 0 && board[move.from] == P.white_rook) {
+		game_state.wooo = false
+	} else if (game_state.woo && move.from == 7 && board[move.from] == P.white_rook) {
+		game_state.woo = false
+	} else if (game_state.booo && move.from == 56 && board[move.from] == P.black_rook) {
+		game_state.booo = false
+	} else if (game_state.boo && move.from == 63 && board[move.from] == P.black_rook) {
+		game_state.boo = false
 	}
 	// en passant
 	let enpassant_sq = get_enpassant_capture_sq(move, board)

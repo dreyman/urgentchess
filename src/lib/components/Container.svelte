@@ -1,77 +1,67 @@
 <script>
 /*
 TODO:
-- add close optional button & on_close prop
 - when window in resized: min/max height/width should also be changed
 - title should be fixed - so only container body should ever be scrollable
  */
 import { onMount } from 'svelte'
+import { innerWidth, innerHeight } from 'svelte/reactivity/window'
 import { scale, fade } from 'svelte/transition'
 import Icon from '$lib/icons/Icon.svelte'
 import Cross from '$lib/icons/cross.svg.svelte'
 
+/** @type {ContainerProps} */
 let {
 	title,
 	minwidth = 200,
 	minheight,
 	width = 200,
-	height = 200,
-	top = '10%',
-	left = '10%',
-	resize = 'both',
+	height = 'auto',
+	top = 'center',
+	left = 'center',
+	resize = 'none',
 	onclose,
-	children
+	children,
 } = $props()
 /** @type {HTMLElement} */
 let el
-/** @type {HTMLElement} */
+/** @type {HTMLElement} */ // svelte-ignore non_reactive_update
 let header
-/** @type {HTMLElement} */
-let content
-let zindex = $state(10)
 
 $effect(() => {
-	if (left == 'center') {
-		// FIXME mb it's better to use window from 'svelte/reactivity' here
-		left = window.innerWidth / 2 - el.clientWidth / 2 + 'px'
-	}
-	if (top == 'center') {
-		top = window.innerHeight / 2 - el.clientHeight / 2 + 'px'
-	}
+	if (left === 'center') el.style.left = innerWidth.current / 2 - el.clientWidth / 2 + 'px'
+	else if (left) el.style.left = left
+	if (top === 'center') el.style.top = innerHeight.current / 2 - el.clientHeight / 2 + 'px'
+	else if (top) el.style.top = top
 })
 
 onMount(() => {
+	// FIXME get rid of this
 	if (minwidth) el.style.minWidth = minwidth + 'px'
 	if (minheight) el.style.minHeight = minheight + 'px'
 	else el.style.minHeight = 'fit-content'
 })
 
-/**
- * @param {HTMLElement} el
- */
+/**  @param {HTMLElement} el */
 function draggable(el) {
 	if (!header) return
 	header.onmousedown = start_drag
 
-	el.style.maxWidth = window.innerWidth - el.offsetLeft - 5 + 'px'
-	el.style.maxHeight = window.innerHeight - el.offsetTop - 5 + 'px'
-	let pos1 = 0,
-		pos2 = 0,
-		pos3 = 0,
-		pos4 = 0
+	/** @type {number} */
+	let prevX
+	/** @type {number} */
+	let prevY
 
+	/** @param {MouseEvent} e */
 	function start_drag(e) {
-		// if (!e.target.isEqualNode(header) && !e.target.isEqualNode(content.children[0]))
-		// 	return
-		zindex = 20
 		e.preventDefault()
-		el.style.width = el.clientWidth
-		el.style.height = el.clientHeight
-		// get the mouse cursor position at startup
-		pos3 = e.clientX
-		pos4 = e.clientY
+
+		// pos3 = e.clientX
+		// pos4 = e.clientY
+		prevX = e.clientX
+		prevY = e.clientY
 		document.onmouseup = end_drag
-		// call a function whenever the cursor moves
+
 		document.onmousemove = drag
 	}
 
@@ -79,51 +69,31 @@ function draggable(el) {
 	 * @param {MouseEvent} e
 	 */
 	function drag(e) {
+		left = top = ''
 		e.preventDefault()
-		// if (el.offsetLeft > window.innerWidth - el.clientWidth) {
-		// 	el.style.left = window.innerWidth - el.clientWidth - 5 + 'px'
-		// 	return
-		// }
-		// if (el.offsetTop > window.innerHeight - el.clientHeight) {
-		// 	el.style.top = window.innerHeight - el.clientHeight - 5 + 'px'
-		// 	return
-		// }
-		// if (el.offsetLeft < 5) {
-		// 	el.style.left = '5px'
-		// 	return
-		// }
-		// if (el.offsetTop < 5) {
-		// 	el.style.top = '5px'
-		// 	return
-		// }
-		// calculate the new cursor position:
-		pos1 = pos3 - e.clientX
-		pos2 = pos4 - e.clientY
-		pos3 = e.clientX
-		pos4 = e.clientY
-		// el.style.left = el.offseLteft - pos1 + 'px'
-		// el.style.top = el.offsetTop - pos2 + 'px'
+
+		let posX = prevX - e.clientX
+		let posY = prevY - e.clientY
+		prevX = e.clientX
+		prevY = e.clientY
 
 		if (
-			(el.offsetTop - pos2 < window.innerHeight - el.clientHeight || pos2 > 0) &&
-			(el.offsetTop - pos2 > 0 || pos2 < 0)
-		)
-			el.style.top = el.offsetTop - pos2 + 'px'
+			(el.offsetTop - posY < window.innerHeight - el.clientHeight || posY > 0) &&
+			(el.offsetTop - posY > 0 || posY < 0)
+		) {
+			el.style.top = el.offsetTop - posY + 'px'
+		}
 		if (
-			(el.offsetLeft < window.innerWidth - el.clientWidth || pos1 > 0) &&
-			(el.offsetLeft > 0 || pos1 < 0)
-		)
-			el.style.left = el.offsetLeft - pos1 + 'px'
+			(el.offsetLeft < window.innerWidth - el.clientWidth || posX > 0) &&
+			(el.offsetLeft > 0 || posX < 0)
+		) {
+			el.style.left = el.offsetLeft - posX + 'px'
+		}
 	}
 
 	function end_drag() {
-		zindex = 10
 		el.style.width = el.clientWidth + 'px'
 		if (height != 'auto') el.style.height = el.clientHeight + 'px'
-		// el.style.width = 'auto'
-		// el.style.height = 'auto'
-		// el.style.maxWidth = window.innerWidth - el.offsetLeft - 5 + 'px'
-		// el.style.maxHeight = window.innerHeight - el.offsetTop - 5 + 'px'
 		document.onmouseup = null
 		document.onmousemove = null
 	}
@@ -136,10 +106,7 @@ function draggable(el) {
 	class="draggable-container"
 	style:width={width == 'auto' ? width : width + 'px'}
 	style:height={height == 'auto' ? height : height + 'px'}
-	style:z-index={zindex}
 	style:resize
-	style:top
-	style:left
 	in:scale={{ duration: 100, start: 0.75 }}
 	out:fade={{ duration: 150 }}
 >
@@ -147,13 +114,13 @@ function draggable(el) {
 		<h3 bind:this={header} class="title">
 			<span>{title}</span>
 			{#if onclose}
-				<button onclick={onclose} class="close-btn rounded-full w-5 h-5">
+				<button onclick={onclose} class="close-btn h-5 w-5 rounded-full">
 					<Icon Icon={Cross} />
 				</button>
 			{/if}
 		</h3>
 	{/if}
-	<div bind:this={content}>{@render children()}</div>
+	<div>{@render children()}</div>
 </div>
 
 <style>

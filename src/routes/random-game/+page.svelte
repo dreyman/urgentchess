@@ -3,9 +3,10 @@ import Game from '$lib/components/Game.svelte'
 import Container from '$lib/components/Container.svelte'
 import { Game as ChessGame, Clock } from '$lib/app/model.svelte.js'
 
-let game = $state(new ChessGame(new Clock(180_000, 180_000, 180_000, 1000)))
+let game = $state(new_game())
 let stopped = $state(false)
-let speed = 100
+let speed = 10
+/** @type {any} */
 let interval
 
 function start() {
@@ -24,10 +25,11 @@ function stop() {
 }
 
 function reset() {
-	game = new ChessGame(new Clock(180_000, 180_000, 180_000, 1000))
+	game = new_game()
 	stopped = false
 }
 
+/** @param {ChessGame} game */
 function make_random_move(game) {
 	if (game.valid_moves.length == 0) {
 		stop()
@@ -36,6 +38,10 @@ function make_random_move(game) {
 	let idx = Math.floor(Math.random() * game.valid_moves.length)
 	let random_move = game.valid_moves[idx]
 	game.move(random_move)
+}
+
+function new_game() {
+	return new ChessGame(new Clock(180_000, 180_000, 180_000, 0))
 }
 </script>
 

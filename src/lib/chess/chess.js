@@ -19,18 +19,6 @@ export const Piece = {
 	bishop: 4,
 	king: 5,
 	queen: 6
-	// white_pawn: 1,
-	// white_rook: 2,
-	// white_knight: 3,
-	// white_bishop: 4,
-	// white_king: 5,
-	// white_queen: 6,
-	// black_pawn: -1,
-	// black_rook: -2,
-	// black_knight: -3,
-	// black_bishop: -4,
-	// black_king: -5,
-	// black_queen: -6
 }
 Piece.white_pawn = Color.white * Piece.pawn
 Piece.black_pawn = Color.black * Piece.pawn
@@ -45,17 +33,25 @@ Piece.black_queen = Color.black * Piece.queen
 Piece.white_king = Color.white * Piece.king
 Piece.black_king = Color.black * Piece.king
 
-// /**
-//  * @typedef {0|1|2|3|4|5|6|7|8|9|10} Square
-//  */
+const Square = {
+	a1: 0,
+	b1: 1,
+	c1: 2,
+	d1: 3,
+	e1: 4,
+	f1: 5,
+	g1: 6,
+	h1: 7,
+	a8: 56,
+	b8: 57,
+	c8: 58,
+	d8: 59,
+	e8: 60,
+	f8: 61,
+	g8: 62,
+	h8: 63,
 
-// /**
-//  * @typedef {Piece|0[]} Board
-//  */
-
-// /**
-//  * @typedef {-6|-5|-4|-3|-2|-1|1|2|3|4|5|6} Piece
-//  */
+}
 
 /**
  * @typedef {Object} Scope
@@ -70,9 +66,10 @@ Piece.black_king = Color.black * Piece.king
  * @typedef {Object} Move
  * @property {number} from
  * @property {number} to
- * @property {boolean | undefined} capture
+ * @property {boolean} [capture]
  */
 
+// FIXME rename to GameContext
 /**
  * @typedef {Object} GameState
  * @property {boolean} woo white short castling
@@ -221,58 +218,59 @@ export function get_king_moves(sq, b, oo = true, ooo = true) {
 	destinations.forEach(dest => {
 		if (empty_or_capture(b[dest], color) && safe(dest, b, color)) moves.push({ from: sq, to: dest })
 	})
+	// FIXME use state._in_check instead of safe(sq, b, color)
 	// castling
 	if (color == Color.white && sq == 4) {
 		// short castling
 		if (
 			oo &&
-			b[5] == 0 &&
-			b[6] == 0 &&
-			b[7] == Piece.white_rook &&
+			b[Square.f1] == 0 &&
+			b[Square.g1] == 0 &&
+			b[Square.h1] == Piece.white_rook &&
 			safe(sq, b, color) &&
-			safe(5, b, color) &&
-			safe(6, b, color)
+			safe(Square.f1, b, color) &&
+			safe(Square.g1, b, color)
 		) {
 			moves.push({ from: 4, to: 6 })
 		}
 		// long castling
 		if (
 			ooo &&
-			b[3] == 0 &&
-			b[2] == 0 &&
-			b[1] == 0 &&
-			b[0] == Piece.white_rook &&
+			b[Square.d1] == 0 &&
+			b[Square.c1] == 0 &&
+			b[Square.b1] == 0 &&
+			b[Square.a1] == Piece.white_rook &&
 			safe(sq, b, color) &&
-			safe(3, b, color) &&
-			safe(2, b, color)
+			safe(Square.d1, b, color) &&
+			safe(Square.c1, b, color)
 		) {
-			moves.push({ from: 4, to: 2 })
+			moves.push({ from: Square.e1, to: Square.c1 })
 		}
 	} else if (color == Color.black && sq == 60) {
 		// short castling
 		if (
 			oo &&
-			b[61] == 0 &&
-			b[62] == 0 &&
-			b[63] == Piece.black_rook &&
+			b[Square.f8] == 0 &&
+			b[Square.g8] == 0 &&
+			b[Square.h8] == Piece.black_rook &&
 			safe(sq, b, color) &&
-			safe(61, b, color) &&
-			safe(62, b, color)
+			safe(Square.f8, b, color) &&
+			safe(Square.g8, b, color)
 		) {
-			moves.push({ from: 60, to: 62 })
+			moves.push({ from: Square.e8, to: Square.g8 })
 		}
 		// long castling
 		if (
 			ooo &&
-			b[59] == 0 &&
-			b[58] == 0 &&
-			b[57] == 0 &&
-			b[56] == Piece.black_rook &&
+			b[Square.d8] == 0 &&
+			b[Square.c8] == 0 &&
+			b[Square.b8] == 0 &&
+			b[Square.a8] == Piece.black_rook &&
 			safe(sq, b, color) &&
-			safe(59, b, color) &&
-			safe(58, b, color)
+			safe(Square.d8, b, color) &&
+			safe(Square.c8, b, color)
 		) {
-			moves.push({ from: 60, to: 58 })
+			moves.push({ from: Square.e8, to: Square.c8 })
 		}
 	}
 	return moves
@@ -342,13 +340,17 @@ export function get_scope(sq, b) {
 	}
 	checked_by = find_next_in_file(sq, b, opposite * Piece.rook, opposite * Piece.queen)
 	if (checked_by != -1) {
-		if (scope != null) return { escape: true }
+		// checked by more than 1 piece: only escape possible
+		if (scope != null)
+			return { escape: true }
 		if (checked_by < sq) scope = { file: { from: checked_by, to: sq - 8 } }
 		else scope = { file: { from: sq + 8, to: checked_by } }
 	}
 	checked_by = find_next_on_diagonal(sq, b, opposite * Piece.bishop, opposite * Piece.queen)
 	if (checked_by != -1) {
-		if (scope != null) return { escape: true }
+		// checked by more than 1 piece: only escape possible
+		if (scope != null)
+			return { escape: true }
 		let diag = (sq - checked_by) % 9 == 0 ? 9 : 7
 		if (checked_by < sq) scope = { diag: { from: checked_by, to: sq - diag } }
 		else scope = { diag: { from: sq + diag, to: checked_by } }
@@ -357,7 +359,9 @@ export function get_scope(sq, b) {
 	let knight_sqs = knight_squares(sq)
 	for (let i = 0; i < knight_sqs.length; ++i) {
 		if (b[knight_sqs[i]] == opposite * Piece.knight) {
-			if (scope != null) return { escape: true }
+			// checked by more than 1 piece: only escape possible
+			if (scope != null)
+				return { escape: true }
 			scope = { square: knight_sqs[i] }
 			// it's impossible to be checked by more than one knight at the same time, so no need to check further
 			break

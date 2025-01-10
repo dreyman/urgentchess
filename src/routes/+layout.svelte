@@ -1,9 +1,7 @@
 <script>
 import '../app.css'
-import { dev } from '$lib/app/appconfig.svelte.js'
 import Container from '$lib/components/Container.svelte'
 import AppSettings from '$lib/components/AppSettings.svelte'
-import P2PPage from './p2p/[peer_id]/+page.svelte'
 
 let { children } = $props()
 let settings_visible = $state(false)
@@ -34,17 +32,11 @@ function toggle_about() {}
 		minwidth={260}
 		minheight={300}
 		width={400}
-		height={450}
 		top="5%"
 		left="center"
+		resize="both"
 	>
 		<AppSettings />
-	</Container>
-{/if}
-
-{#if dev.peer_id}
-	<Container title="Fake Peer" resize="both" minwidth={100} width={300} height={400}>
-		<P2PPage data={{ peer_id: dev.peer_id, container: true }} />
 	</Container>
 {/if}
 

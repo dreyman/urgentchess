@@ -1,19 +1,4 @@
 <script>
-/*
-TODO
-+ the piece being dragged should always be rendered on top of all other pieces
-+ should be possible to make a move by clicking on squares (only dnd works atm)
-- impl the ability to select piece on pawn promotion
-+ show previous move (highlight squares)
-- premove
-+ shadow/ghost of the piece being moved
-- animations
-+ mobile touch support for dnd
-- add settings per board (cog icon in the title)
-- add mute board button in the title
-- move piece svg symbol's to a separate file (and use them as snippets?)
-- 2 more orientations
-*/
 import { piece_name } from '$lib/chess/util.js'
 import { app_config } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
@@ -24,8 +9,10 @@ let { board, on_move, side = 0, orientation: ori, last_move, children } = $props
 // let capture_audio = new Audio(capture_sound)
 
 $effect(() => {
-	if (!ori && side == 0) ori = Math.random() > 0.5 ? 1 : 0
-	else if (!ori) ori = side
+	if (!ori) {
+		if (side == 0) ori = Math.random() > 0.5 ? 1 : 0
+		else ori = side
+	}
 })
 
 $effect(() => {
@@ -37,6 +24,7 @@ $effect(() => {
 
 let selected_piece = $state(-1)
 let config = app_config.board
+/** @type {HTMLElement} */
 let drag_el
 let dragging = $state(false)
 
@@ -100,7 +88,7 @@ function board_dnd(el) {
 		if (evt.changedTouches) evt = evt.changedTouches[0]
 		return {
 			x: (evt.clientX - e) / a,
-			y: (evt.clientY - f) / d
+			y: (evt.clientY - f) / d,
 		}
 	}
 }
@@ -137,6 +125,8 @@ function get_symbol_for_piece(piece) {
 			{#each { length: 8 }, rank}
 				{@const sq_idx = get_square_idx({ x: file, y: rank })}
 				{@const square_color = (rank + file) % 2 == 1 ? config.colors.dark : config.colors.light}
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<rect
 					onclick={() => on_square_click(get_square_idx({ x: file, y: rank }))}
 					width="1"
@@ -158,6 +148,8 @@ function get_symbol_for_piece(piece) {
 			{#if piece != 0}
 				{@const x = (idx % 8) * ori - 3.5 * (ori - 1)}
 				{@const y = -ori * Math.floor(idx / 8) + 3.5 * (ori + 1)}
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<use
 					href={get_symbol_for_piece(piece)}
 					onclick={() => on_square_click(idx)}

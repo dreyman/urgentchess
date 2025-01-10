@@ -29,14 +29,14 @@ export class Game {
 	)
 	// prettier-ignore
 	result_message = $derived(
-		this.white_timeout ? 'white time out'
-		: this.black_timeout ? 'black time out'
-		: this.checkmate_white ? 'Checkmate. Black won'
-		: this.checkmate_black ? 'Checkmate. White won'
-		: this.stalemate ? 'Stalemate'
-		: this.white_resigned ? 'White resigned'
-		: this.black_resigned ? 'Black resigned'
-		: this.draw ? 'Draw'
+		this.white_timeout ? 'White time out. 0 - 1'
+		: this.black_timeout ? 'Black time out. 1 - 0'
+		: this.checkmate_white ? 'Checkmate. 0 - 1'
+		: this.checkmate_black ? 'Checkmate. 1 - 0'
+		: this.stalemate ? 'Stalemate. ½ - ½'
+		: this.white_resigned ? 'White resigned. 0 - 1'
+		: this.black_resigned ? 'Black resigned. 1 - 0'
+		: this.draw ? 'Draw. ½ - ½'
 		: ''
 	)
 
@@ -45,7 +45,7 @@ export class Game {
 	 * @param {number[]} board
 	 * @param {Move[]} moves
 	 */
-	constructor(clock, board = util.starting_position(), moves = []) {
+	constructor(clock, board = util.initial_position(), moves = []) {
 		this.clock = clock
 		this.board = board
 		this.state = chess.create_state(this.board, moves)
@@ -59,7 +59,7 @@ export class Game {
 		if (this.clock.time1.val <= 0 || this.clock.time2.val <= 0 || !this.is_legal_move(move)) {
 			return false
 		}
-		util.make_move(move, this.board, this.state)
+		util.apply_move(move, this.board, this.state)
 
 		if (this.moves.length == 2) this.clock.start()
 		else if (this.moves.length > 2) this.clock.toggle()

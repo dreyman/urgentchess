@@ -2,7 +2,7 @@
 import ChessBoard from '$lib/components/ChessBoard.svelte'
 import Time from '$lib/components/Time.svelte'
 
-/** @type {{ game: import('$lib/app/model.svelte.js').Game, side: -1|0|1, onmove: function(Move):void  }} */
+/** @type {{ game: import('$lib/app/model.svelte.js').Game, side: Side, onmove?: function(Move):void }} */
 let { game, side = 0, onmove = () => {} } = $props()
 let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
 
@@ -48,8 +48,8 @@ function on_black_timeout() {
 .board-overlay {
 	position: absolute;
 	inset: 0;
-	background: rgba(0, 0, 0, 0.15);
-	backdrop-filter: blur(1px);
+	background: rgba(0, 0, 0, 0.25);
+/*	backdrop-filter: blur(0px);*/
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

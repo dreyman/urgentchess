@@ -1,3 +1,5 @@
+import type { Snippet } from 'svelte'
+
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
@@ -12,10 +14,11 @@ declare global {
 	interface Move {
 		from: number
 		to: number
-		capture: boolean | undefined
+		capture?: boolean
 	}
 
-	type Color = -1 | 1;
+	type Color = -1 | 1
+	type Side = Color | 0
 
 	interface GameResult {
 		winner: Color | 0,
@@ -24,14 +27,6 @@ declare global {
 		stalemate: boolean,
 		checkmate: boolean,
 	}
-
-	// interface Game {
-	// 	side: -1 | 1
-	// 	time: number,
-	// 	increment: number,
-	// 	board: number[],
-	// 	state: GameState
-	// }
 
 	interface GameState {
 		moves: Move[],
@@ -43,6 +38,19 @@ declare global {
 		bking: number,
 		white_in_check: boolean,
 		black_in_check: boolean,
+	}
+
+	interface ContainerProps {
+		title: string,
+		minwidth?: number,
+		minheight?: number,
+		width?: number | string,
+		height?: number | string,
+		top?: string,
+		left?: string,
+		resize?: string,
+		onclose?: function():void,
+		children: Snippet
 	}
 }
 
