@@ -1,9 +1,17 @@
 <script>
-import { onMount, untrack } from 'svelte'
+import { untrack } from 'svelte'
 import Game from '$lib/components/Game.svelte'
-import { app_config } from '$lib/app/appconfig.svelte.js'
+import { appconfig } from '$lib/app/appconfig.svelte.js'
 
+/** @type {{
+ * game: import('$lib/app/model.svelte.js').Game
+ * side: Side,
+ * messages: any[],
+ * onrematch: function():void,
+ * send_data: function(any):void
+}} */
 let { game, side, messages, onrematch, send_data } = $props()
+
 let opposite_side = $derived(-side)
 let pending_draw_offer = $state(false)
 let offering_draw = $state(false)
@@ -19,7 +27,7 @@ const p2p = {
 	rematch_offer: 'rematch_offer',
 	cancel_rematch_offer: 'cancel_rematch_offer',
 	accept_rematch: 'accept_rematch',
-	decline_rematch: 'decline_rematch'
+	decline_rematch: 'decline_rematch',
 }
 
 $effect(() => {
@@ -29,14 +37,16 @@ $effect(() => {
 	}
 })
 
+/** @param {Move} move */
 function onmove(move) {
 	send_data({ move })
 }
 
+/** @param {any} data */
 function on_data(data) {
 	if (data.move && game.result === null) {
 		game.move(data.move)
-		if (app_config.game.random_move) {
+		if (appconfig.game.random_move) {
 			let random_move = game.get_random_legal_move()
 			if (random_move) {
 				send_data({ move: random_move })

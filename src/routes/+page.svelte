@@ -2,12 +2,14 @@
 import { goto } from '$app/navigation'
 import CreateGameForm from '$lib/components/CreateGameForm.svelte'
 import { storage } from '$lib/app/storage.js'
-import { dev } from '$lib/app/appconfig.svelte.js'
 
-function new_game(data) {
-	storage.set('game', data.game)
-	storage.set('side', data.side)
-	storage.set('game_data', data.game_data)
+/**
+ * @param {import('$lib/app/model.svelte.js').Game} game
+ * @param {Side} side
+ */
+function new_game(game, side) {
+	storage.set('game', game)
+	storage.set('side', side)
 	goto('#/p2p')
 }
 </script>

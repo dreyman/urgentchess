@@ -28,7 +28,7 @@ declare global {
 		checkmate: boolean,
 	}
 
-	interface GameState {
+	interface GameContext {
 		moves: Move[],
 		woo: boolean,
 		wooo: boolean,

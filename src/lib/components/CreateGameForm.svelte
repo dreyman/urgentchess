@@ -1,9 +1,11 @@
 <script>
 import { Game, Clock } from '$lib/app/model.svelte.js'
 
+/** @type {{ onsubmit: function(Game, Side):void, className: string }} */
 let { onsubmit, className } = $props()
 let minutes = $state(3)
 let increment = $state(2)
+/** @type Side */
 let side = $state(0)
 
 function submit() {
@@ -11,14 +13,14 @@ function submit() {
 	let time = minutes * 60_000
 	let game = new Game(new Clock(time, time, time, increment * 1000))
 	if (side == 0) side = Math.random() < 0.5 ? -1 : 1
-	onsubmit({ game, side })
+	onsubmit(game, side)
 }
 </script>
 
 <div class="create-game-form flex w-full flex-col items-center gap-2 px-4 {className}">
-	<div><span class="font-bold">{minutes}</span> minutes per side</div>
+	<div><b>{minutes}</b> minutes per side</div>
 	<input type="range" min="0" max="60" bind:value={minutes} class="w-full" />
-	<div><span class="font-bold">{increment}</span> seconds increment</div>
+	<div><b>{increment}</b> seconds increment</div>
 	<input type="range" min="0" max="60" bind:value={increment} class="w-full" />
 	<div class="select-side-group mt-6 flex justify-center">
 		<button onclick={() => (side = 1)} class:active={side == 1}>WHITE</button>

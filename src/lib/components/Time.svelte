@@ -1,7 +1,9 @@
 <script>
+import { appconfig } from '$lib/app/appconfig.svelte.js'
+
+/** @type {{ time: import('$lib/app/model.svelte.js').Time, ontimeout: function():void }} */
 let { time, ontimeout } = $props()
 let t = $state(time.val)
-let update_interval = 250
 let seconds = $derived.by(() => {
 	let seconds = Math.floor((t / 1_000) % 60)
 	return seconds < 10 ? '0' + seconds : seconds
@@ -19,7 +21,7 @@ $effect(() => {
 				t = 0
 				ontimeout()
 			}
-		}, update_interval)
+		}, appconfig.game.time_update_interval)
 		return () => {
 			t = time.val
 			clearInterval(interval)

@@ -69,14 +69,13 @@ const Square = {
  * @property {boolean} [capture]
  */
 
-// FIXME rename to GameContext
 /**
- * @typedef {Object} GameState
+ * @typedef {Object} GameContext
+ * @property {Move[]} moves
  * @property {boolean} woo white short castling
  * @property {boolean} wooo white long castling
  * @property {boolean} boo black short castling
  * @property {boolean} booo black long castling
- * @property {Move[]} moves
  * @property {number} wking white king square
  * @property {number} bking black king square
  * @property {boolean} white_in_check
@@ -89,15 +88,15 @@ const Square = {
  * @returns {Move[]}
  */
 export function get_moves_for(board, previous_moves) {
-	return get_moves(board, create_state(board, previous_moves))
+	return get_moves(board, create_context(board, previous_moves))
 }
 
 /**
  * @param {number[]} board
  * @param {Move[]} moves
- * @returns {GameState}
+ * @returns {GameContext}
  */
-export function create_state(board, moves) {
+export function create_context(board, moves) {
 	let woo = true,
 		wooo = true,
 		boo = true,
@@ -129,22 +128,22 @@ export function create_state(board, moves) {
 
 /**
  * @param {number[]} board
- * @param {GameState} state
+ * @param {GameContext} context
  * @returns {Move[]}
  */
-export function get_moves(board, state) {
-	let white_to_move = state.moves.length % 2 == 0
+export function get_moves(board, context) {
+	let white_to_move = context.moves.length % 2 == 0
 	let color = white_to_move ? Color.white : Color.black
-	let last_move = state.moves.length > 0 ? state.moves[state.moves.length - 1] : null
-	let king_sq = color == Color.white ? state.wking : state.bking
+	let last_move = context.moves.length > 0 ? context.moves[context.moves.length - 1] : null
+	let king_sq = color == Color.white ? context.wking : context.bking
 	let scope = null
-	let castling_short = color == Color.white ? state.woo : state.boo
-	let castling_long = color == Color.white ? state.wooo : state.booo
+	let castling_short = color == Color.white ? context.woo : context.boo
+	let castling_long = color == Color.white ? context.wooo : context.booo
 	if (king_sq != -1) {
 		scope = get_scope(king_sq, board)
 		if (scope != null) {
-			state.white_in_check = color == Color.white
-			state.black_in_check = color == Color.black
+			context.white_in_check = color == Color.white
+			context.black_in_check = color == Color.black
 			if (scope.escape) return get_king_moves(king_sq, board, castling_short, castling_long)
 		}
 	}
@@ -218,7 +217,7 @@ export function get_king_moves(sq, b, oo = true, ooo = true) {
 	destinations.forEach(dest => {
 		if (empty_or_capture(b[dest], color) && safe(dest, b, color)) moves.push({ from: sq, to: dest })
 	})
-	// FIXME use state._in_check instead of safe(sq, b, color)
+	// FIXME use context._in_check instead of safe(sq, b, color)
 	// castling
 	if (color == Color.white && sq == 4) {
 		// short castling

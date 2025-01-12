@@ -1,32 +1,41 @@
 <script>
+/*
+TODO:
+- impl the ability to select piece on pawn promotion
+- premove
+- animations
+- add settings per board (cog icon in the title)
+- add mute board button in the title
+- move piece svg symbol's to a separate file (and use them as snippets?)
+- 2 more orientations
+*/
 import { piece_name } from '$lib/chess/util.js'
-import { app_config } from '$lib/app/appconfig.svelte.js'
+import { appconfig } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
 import move_sound from '$lib/audio/move.mp3'
 
-let { board, on_move, side = 0, orientation: ori, last_move, children } = $props()
+let { board, onmove, side = 0, orientation: ori, last_move, children } = $props()
+let selected_piece = $state(-1)
+let config = appconfig.board
+/** @type {HTMLElement} */
+let drag_el
+let dragging = $state(false)
 // let move_audio = new Audio(move_sound)
 // let capture_audio = new Audio(capture_sound)
 
 $effect(() => {
 	if (!ori) {
-		if (side == 0) ori = Math.random() > 0.5 ? 1 : 0
+		if (side == 0) ori = Math.random() > 0.5 ? 1 : -1
 		else ori = side
 	}
 })
 
 $effect(() => {
-	if (last_move && app_config.game.board_sounds) {
+	if (last_move && config.sounds) {
 		if (last_move.capture) new Audio(capture_sound).play()
 		else new Audio(move_sound).play()
 	}
 })
-
-let selected_piece = $state(-1)
-let config = app_config.board
-/** @type {HTMLElement} */
-let drag_el
-let dragging = $state(false)
 
 function on_square_click(sq) {
 	if (selected_piece != -1 && board[sq] / board[selected_piece] <= 0) {
@@ -51,13 +60,12 @@ function board_dnd(el) {
 		if (e.target.dataset.draggable == 'true') {
 			e.preventDefault()
 			let square = +e.target.dataset.square
-			if (selected_piece == square) selected_piece = -1
-			else selected_piece = square
+			selected_piece = selected_piece == square ? -1 : square
 			drag_piece = e.target
 			drag_piece.setAttributeNS(null, 'opacity', config.piece_shadow_opacity)
 			drag_el.setAttributeNS(null, 'href', get_symbol_for_piece(board[square]))
 			drag_el.dataset.square = +e.target.dataset.square
-			let mouse = getMousePosition(e)
+			let mouse = get_mouse_position(e)
 			drag_el.setAttributeNS(null, 'x', mouse.x - 0.5)
 			drag_el.setAttributeNS(null, 'y', mouse.y - 0.5)
 			dragging = true
@@ -67,7 +75,7 @@ function board_dnd(el) {
 	function on_drag(e) {
 		if (dragging) {
 			e.preventDefault()
-			let mouse = getMousePosition(e)
+			let mouse = get_mouse_position(e)
 			drag_el.setAttributeNS(null, 'x', mouse.x - 0.5)
 			drag_el.setAttributeNS(null, 'y', mouse.y - 0.5)
 		}
@@ -76,14 +84,14 @@ function board_dnd(el) {
 	function on_drag_end(e) {
 		if (dragging) {
 			drag_piece.setAttributeNS(null, 'opacity', 1)
-			let pos = getMousePosition(e)
+			let pos = get_mouse_position(e)
 			let move = { from: +drag_el.dataset.square, to: get_square_idx(pos) }
 			if (move.from != move.to) apply_move(move)
 		}
 		dragging = false
 	}
 
-	function getMousePosition(evt) {
+	function get_mouse_position(evt) {
 		let { e, a, f, d } = board_svg.getScreenCTM()
 		if (evt.changedTouches) evt = evt.changedTouches[0]
 		return {
@@ -94,7 +102,7 @@ function board_dnd(el) {
 }
 
 function apply_move(move) {
-	let moved = on_move(move)
+	let moved = onmove(move)
 	if (moved) selected_piece = -1
 }
 

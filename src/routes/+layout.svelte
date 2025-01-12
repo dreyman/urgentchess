@@ -29,10 +29,10 @@ function toggle_about() {}
 	<Container
 		title="Settings"
 		onclose={() => settings_visible = false}
-		minwidth={260}
+		minwidth={400}
 		minheight={300}
 		width={400}
-		top="5%"
+		top="center"
 		left="center"
 		resize="both"
 	>

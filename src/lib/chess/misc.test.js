@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
-import { get_board, Square as S, empty_state, initial_position, apply_move } from './util'
-import { Piece as P, create_state, get_moves } from './chess.js'
+import { get_board, Square as S, empty_context, initial_position, apply_move } from './util'
+import { Piece as P, create_context, get_moves } from './chess.js'
 
 test('king is in check: can only block', () => {
 	let board = get_board({
@@ -13,9 +13,9 @@ test('king is in check: can only block', () => {
 		d6: P.black_queen
 	})
 
-	let state = empty_state()
-	state.wking = S.g1
-	let moves = get_moves(board, state)
+	let context = empty_context()
+	context.wking = S.g1
+	let moves = get_moves(board, context)
 	expect(moves.sort()).toMatchObject([{ from: S.d3, to: S.f1 }].sort())
 })
 
@@ -29,24 +29,24 @@ test('queen diag mvmnt', () => {
 		c8: P.black_queen
 	})
 
-	let state = empty_state()
-	state.wking = S.h4
-	state.bking = S.c3
-	state.moves = [{ from: S.h3, to: S.h4 }]
-	let moves = get_moves(board, state)
+	let context = empty_context()
+	context.wking = S.h4
+	context.bking = S.c3
+	context.moves = [{ from: S.h3, to: S.h4 }]
+	let moves = get_moves(board, context)
 	let idx = moves.findIndex(m => m.from == 58 && m.to == 31)
 	expect(idx).toBe(-1)
 })
 
 test('checkmate => no legal moves', () => {
 	let board = initial_position()
-	let state = create_state(board, [])
-	apply_move({ from: S.f2, to: S.f4 }, board, state)
-	apply_move({ from: S.e7, to: S.e6 }, board, state)
-	apply_move({ from: S.g2, to: S.g4 }, board, state)
-	apply_move({ from: S.d8, to: S.h4 }, board, state)
+	let context = create_context(board, [])
+	apply_move({ from: S.f2, to: S.f4 }, board, context)
+	apply_move({ from: S.e7, to: S.e6 }, board, context)
+	apply_move({ from: S.g2, to: S.g4 }, board, context)
+	apply_move({ from: S.d8, to: S.h4 }, board, context)
 
-	let moves = get_moves(board, state)
+	let moves = get_moves(board, context)
 
 	expect(moves.length).toBe(0)
 })

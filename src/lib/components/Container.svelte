@@ -27,11 +27,13 @@ let {
 let el
 /** @type {HTMLElement} */ // svelte-ignore non_reactive_update
 let header
+let dragging = $state(false)
 
 $effect(() => {
-	if (left === 'center') el.style.left = innerWidth.current / 2 - el.clientWidth / 2 + 'px'
+	// FIXME when width/height isn't set in props then 'center' doesn't work propery
+	if (left == 'center') el.style.left = innerWidth.current / 2 - el.clientWidth / 2 + 'px'
 	else if (left) el.style.left = left
-	if (top === 'center') el.style.top = innerHeight.current / 2 - el.clientHeight / 2 + 'px'
+	if (top == 'center') el.style.top = innerHeight.current / 2 - el.clientHeight / 2 + 'px'
 	else if (top) el.style.top = top
 })
 
@@ -42,7 +44,7 @@ onMount(() => {
 	else el.style.minHeight = 'fit-content'
 })
 
-/**  @param {HTMLElement} el */
+/** @param {HTMLElement} el */
 function draggable(el) {
 	if (!header) return
 	header.onmousedown = start_drag
@@ -56,12 +58,10 @@ function draggable(el) {
 	function start_drag(e) {
 		e.preventDefault()
 
-		// pos3 = e.clientX
-		// pos4 = e.clientY
 		prevX = e.clientX
 		prevY = e.clientY
-		document.onmouseup = end_drag
 
+		document.onmouseup = end_drag
 		document.onmousemove = drag
 	}
 
@@ -69,6 +69,7 @@ function draggable(el) {
 	 * @param {MouseEvent} e
 	 */
 	function drag(e) {
+		dragging = true
 		left = top = ''
 		e.preventDefault()
 
@@ -92,6 +93,7 @@ function draggable(el) {
 	}
 
 	function end_drag() {
+		dragging = false
 		el.style.width = el.clientWidth + 'px'
 		if (height != 'auto') el.style.height = el.clientHeight + 'px'
 		document.onmouseup = null
@@ -109,6 +111,7 @@ function draggable(el) {
 	style:resize
 	in:scale={{ duration: 100, start: 0.75 }}
 	out:fade={{ duration: 150 }}
+	class:opacity-95={dragging}
 >
 	{#if title}
 		<h3 bind:this={header} class="title">

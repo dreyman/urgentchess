@@ -7,7 +7,7 @@ let { game, side = 0, onmove = () => {} } = $props()
 let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
 
 /** @param {Move} move */
-function on_move(move) {
+function on_board_move(move) {
 	// FIXME shouldn't be possible to move if clock is not running
 	if (game.is_legal_move(move)) {
 		onmove(move)
@@ -32,7 +32,7 @@ function on_black_timeout() {
 	{#key game}
 		<Time time={game.clock.time1} ontimeout={on_white_timeout} />
 		<div class="w-full">
-			<ChessBoard board={game.board} {on_move} {side} {orientation} last_move={game.last_move}>
+			<ChessBoard board={game.board} onmove={on_board_move} {side} {orientation} last_move={game.last_move}>
 				{#if game.result_message != ''}
 					<div class="board-overlay">
 						<h1 class="board-message">{game.result_message}</h1>

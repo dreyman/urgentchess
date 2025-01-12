@@ -37,6 +37,7 @@
 		"vitest": "^2.0.4"
 	},
 	"dependencies": {
-		"peerjs": "^1.5.4"
+		"peerjs": "^1.5.4",
+		"ulid": "^2.3.0"
 	}
 }

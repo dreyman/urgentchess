@@ -27,3 +27,17 @@ body {
 	color: #c6c6c6;
 	overflow: auto;
 }
+
+input[type="checkbox"] {
+	accent-color: #7cacf8;
+	color: #062e6f;
+}
+
+input[type="radio"] {
+	accent-color: #7cacf8;
+	color: #062e6f;
+}
+
+input[type='range']{
+	accent-color: #7cacf8;
+}

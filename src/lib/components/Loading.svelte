@@ -1,5 +1,5 @@
 <script>
-let { className, message = '', status = 'pending' } = $props()
+let { className = '', message = '', status = 'pending' } = $props()
 let err_color = 'red'
 </script>
 

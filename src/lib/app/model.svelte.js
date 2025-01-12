@@ -1,13 +1,14 @@
 import * as util from '$lib/chess/util.js'
 import * as chess from '$lib/chess/chess.js'
+/** @import {GameContext} from '$lib/chess/chess.js' */
 
 export class Game {
 	/** @type {number[]} */
 	board = $state([])
 	clock
 
-	/** @type {GameState} */
-	state = $state(chess.create_state(this.board, []))
+	/** @type {GameContext} */
+	context = $state(chess.create_context(this.board, []))
 
 	/** @type {Move[]} */
 	valid_moves = []
@@ -48,8 +49,8 @@ export class Game {
 	constructor(clock, board = util.initial_position(), moves = []) {
 		this.clock = clock
 		this.board = board
-		this.state = chess.create_state(this.board, moves)
-		this.valid_moves = chess.get_moves(this.board, this.state)
+		this.context = chess.create_context(this.board, moves)
+		this.valid_moves = chess.get_moves(this.board, this.context)
 	}
 
 	/**
@@ -59,17 +60,17 @@ export class Game {
 		if (this.clock.time1.val <= 0 || this.clock.time2.val <= 0 || !this.is_legal_move(move)) {
 			return false
 		}
-		util.apply_move(move, this.board, this.state)
+		util.apply_move(move, this.board, this.context)
 
 		if (this.moves.length == 2) this.clock.start()
 		else if (this.moves.length > 2) this.clock.toggle()
 
-		this.valid_moves = chess.get_moves(this.board, this.state)
+		this.valid_moves = chess.get_moves(this.board, this.context)
 
 		if (this.valid_moves.length == 0) {
 			this.clock.stop()
-			if (this.state.white_in_check) this.checkmate_white = true
-			else if (this.state.black_in_check) this.checkmate_black = true
+			if (this.context.white_in_check) this.checkmate_white = true
+			else if (this.context.black_in_check) this.checkmate_black = true
 			else this.stalemate = true
 		}
 
@@ -130,7 +131,7 @@ export class Game {
 	}
 
 	get moves() {
-		return this.state.moves
+		return this.context.moves
 	}
 
 	get last_move() {

@@ -1,5 +1,5 @@
 import { Piece as P, Color } from './chess.js'
-/** @import {GameState} from './chess.js'; */
+/** @import {GameContext} from './chess.js'; */
 /** @import {Move} from './chess.js'; */
 
 /**
@@ -9,8 +9,8 @@ export function empty_board() {
 	return new Array(64).fill(0)
 }
 
-/** @returns {GameState} */
-export function empty_state() {
+/** @returns {GameContext} */
+export function empty_context() {
 	return {
 		moves: [],
 		wking: -1,
@@ -65,29 +65,29 @@ export function get_board(cfg) {
 /**
  * @param {Move} move
  * @param {number[]} board
- * @param {GameState} game_state
+ * @param {GameContext} context
  */
-export function apply_move(move, board, game_state) {
-	if (board[move.from] > 0) game_state.white_in_check = false
-	else game_state.black_in_check = false
+export function apply_move(move, board, context) {
+	if (board[move.from] > 0) context.white_in_check = false
+	else context.black_in_check = false
 
 	// invalidate castling
 	if (board[move.from] == P.white_king) {
-		game_state.woo = false
-		game_state.wooo = false
-		game_state.wking = move.to
+		context.woo = false
+		context.wooo = false
+		context.wking = move.to
 	} else if (board[move.from] == P.black_king) {
-		game_state.boo = false
-		game_state.booo = false
-		game_state.bking = move.to
-	} else if (game_state.wooo && move.from == 0 && board[move.from] == P.white_rook) {
-		game_state.wooo = false
-	} else if (game_state.woo && move.from == 7 && board[move.from] == P.white_rook) {
-		game_state.woo = false
-	} else if (game_state.booo && move.from == 56 && board[move.from] == P.black_rook) {
-		game_state.booo = false
-	} else if (game_state.boo && move.from == 63 && board[move.from] == P.black_rook) {
-		game_state.boo = false
+		context.boo = false
+		context.booo = false
+		context.bking = move.to
+	} else if (context.wooo && move.from == 0 && board[move.from] == P.white_rook) {
+		context.wooo = false
+	} else if (context.woo && move.from == 7 && board[move.from] == P.white_rook) {
+		context.woo = false
+	} else if (context.booo && move.from == 56 && board[move.from] == P.black_rook) {
+		context.booo = false
+	} else if (context.boo && move.from == 63 && board[move.from] == P.black_rook) {
+		context.boo = false
 	}
 	// en passant
 	let enpassant_sq = get_enpassant_capture_sq(move, board)
@@ -129,7 +129,7 @@ export function apply_move(move, board, game_state) {
 		board[move.from] = 0
 	}
 
-	game_state.moves.push(move)
+	context.moves.push(move)
 }
 
 /**

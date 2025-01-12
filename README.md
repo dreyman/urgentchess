@@ -1,8 +1,8 @@
 # WIP
 
-[Urgent chess on netlify](https://urgentchess.netlify.app/)
+[Urgent chess on netlify](https://urgentchess.netlify.app)
 
-## To run app locally
+## To build and run app locally
 
 ```bash
 npm run build
