@@ -1,5 +1,5 @@
 <script>
-import { appconfig, board_themes } from '$lib/app/appconfig.svelte.js'
+import { appconfig, board_themes, piece_sets } from '$lib/app/appconfig.svelte.js'
 
 let active_tab = $state('board')
 let board_colors = appconfig.board.colors
@@ -44,8 +44,8 @@ let board_colors = appconfig.board.colors
 
 {#snippet board_settings()}
 	<div class="flex flex-col gap-2">
-		<div class="flex">
-			<span>Colors:</span>
+		<div class="flex items-center">
+			<span class="mr-2">Colors:</span>
 			{#each board_themes as theme}
 				<button
 					onclick={() => {board_colors.light = theme.light; board_colors.dark = theme.dark}}
@@ -55,6 +55,17 @@ let board_colors = appconfig.board.colors
 				>
 					<div class="h-6 w-6" style:background-color={theme.light}></div>
 					<div class="h-6 w-6" style:background-color={theme.dark}></div>
+				</button>
+			{/each}
+		</div>
+		<div class="flex items-center">
+			<span class="mr-2">Piece set:</span>
+			{#each piece_sets as piece_set}
+				<button onclick={() => appconfig.board.piece_set = piece_set}
+					class="piece-set-btn py-1 px-2"
+					class:active={appconfig.board.piece_set == piece_set}
+				>
+					{piece_set}
 				</button>
 			{/each}
 		</div>
@@ -71,7 +82,7 @@ let board_colors = appconfig.board.colors
 			Highlight king in check
 		</label>
 		<label>
-			Piece size: <b>{100 + appconfig.board.piece_size}%</b>
+			Piece size: <b>{100 + appconfig.board.piece_size * 2}%</b>
 			<input
 				type="range"
 				min="-20"
@@ -116,12 +127,21 @@ let board_colors = appconfig.board.colors
 }
 
 .theme-btn {
-/*	border: 1px solid #c6c6c6;*/
 	background: #272727;
 	padding: 0;
 }
 
 .theme-btn.active {
 	border: 3px solid #a8c7fa;
+}
+
+.piece-set-btn {
+	background: #3c3c3c;
+}
+
+.piece-set-btn.active {
+	background: #4f4f4f;
+	color: #a8c7fa;
+	font-weight: bold;
 }
 </style>

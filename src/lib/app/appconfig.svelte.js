@@ -16,7 +16,10 @@ export const board_themes = [
 	}
 ]
 
+export const piece_sets = ['default', 'horsey']
+
 const default_theme = board_themes[0]
+const default_piece_set = piece_sets[0]
 
 const default_config = {
 	board: {
@@ -27,6 +30,7 @@ const default_config = {
 			selected_piece: '#a186f1',
 			last_move: '#ccd169',
 		},
+		piece_set: default_piece_set,
 		highlight_last_move: true,
 		highlight_king_in_check: true,
 		animations: false, // TODO impl for true

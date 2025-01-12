@@ -6,14 +6,19 @@ TODO:
 - animations
 - add settings per board (cog icon in the title)
 - add mute board button in the title
-- move piece svg symbol's to a separate file (and use them as snippets?)
 - 2 more orientations
 */
 import { piece_name } from '$lib/chess/util.js'
-import { Piece } from '$lib/chess/chess.js'
+import { Piece, Color } from '$lib/chess/chess.js'
 import { appconfig } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
 import move_sound from '$lib/audio/move.mp3'
+import { king_svg_symbol } from '$lib/components/pieces/King.svg.svelte'
+import { queen_svg_symbol } from '$lib/components/pieces/Queen.svg.svelte'
+import { bishop_svg_symbol } from '$lib/components/pieces/Bishop.svg.svelte'
+import { rook_svg_symbol } from '$lib/components/pieces/Rook.svg.svelte'
+import { knight_svg_symbol } from '$lib/components/pieces/Knight.svg.svelte'
+import { pawn_svg_symbol } from '$lib/components/pieces/Pawn.svg.svelte'
 
 let { board, onmove, side = 0, orientation: ori, last_move, context = {}, children } = $props()
 let selected_piece = $state(-1)
@@ -137,7 +142,7 @@ function get_symbol_for_piece(piece) {
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<rect
-					onclick={() => on_square_click(get_square_idx({ x: file, y: rank }))}
+					onclick={() => on_square_click(sq_idx)}
 					width="1"
 					height="1"
 					x={file}
@@ -187,7 +192,20 @@ function get_symbol_for_piece(piece) {
 			</radialGradient>
 		</defs>
 
-		<symbol id="wking" viewBox="0 0 45 45">
+		{@render king_svg_symbol(config.piece_set, Color.white)}
+		{@render king_svg_symbol(config.piece_set, Color.black)}
+		{@render queen_svg_symbol(config.piece_set, Color.white)}
+		{@render queen_svg_symbol(config.piece_set, Color.black)}
+		{@render bishop_svg_symbol(config.piece_set, Color.white)}
+		{@render bishop_svg_symbol(config.piece_set, Color.black)}
+		{@render rook_svg_symbol(config.piece_set, Color.white)}
+		{@render rook_svg_symbol(config.piece_set, Color.black)}
+		{@render knight_svg_symbol(config.piece_set, Color.white)}
+		{@render knight_svg_symbol(config.piece_set, Color.black)}
+		{@render pawn_svg_symbol(config.piece_set, Color.white)}
+		{@render pawn_svg_symbol(config.piece_set, Color.black)}
+
+		<!-- <symbol id="wking" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				fill="none"
@@ -239,8 +257,8 @@ function get_symbol_for_piece(piece) {
 					style="fill:none; stroke:#ffffff;"
 				/>
 			</g>
-		</symbol>
-		<symbol id="wqueen" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="wqueen" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g style="fill:#ffffff;stroke:#000000;stroke-width:1.5;stroke-linejoin:round">
 				<path
@@ -257,8 +275,8 @@ function get_symbol_for_piece(piece) {
 				<circle cx="31" cy="9" r="2" />
 				<circle cx="39" cy="12" r="2" />
 			</g>
-		</symbol>
-		<symbol id="bqueen" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="bqueen" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				style="fill:#000000;stroke:#000000;stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round"
@@ -288,8 +306,8 @@ function get_symbol_for_piece(piece) {
 					<path d="M 10.5,37.5 A 35,35 1 0 0 34.5,37.5" />
 				</g>
 			</g>
-		</symbol>
-		<symbol id="wbishop" viewBox="0 0 45 45">
+		</symbol> -->
+<!-- 		<symbol id="wbishop" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -309,8 +327,8 @@ function get_symbol_for_piece(piece) {
 					style="fill:none; stroke:#000000; stroke-linejoin:miter;"
 				/>
 			</g>
-		</symbol>
-		<symbol id="bbishop" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="bbishop" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -330,8 +348,8 @@ function get_symbol_for_piece(piece) {
 					style="fill:none; stroke:#ffffff; stroke-linejoin:miter;"
 				/>
 			</g>
-		</symbol>
-		<symbol id="wknight" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="wknight" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -355,8 +373,8 @@ function get_symbol_for_piece(piece) {
 					style="fill:#000000; stroke:#000000;"
 				/>
 			</g>
-		</symbol>
-		<symbol id="bknight" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="bknight" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -384,8 +402,8 @@ function get_symbol_for_piece(piece) {
 					style="fill:#ffffff; stroke:none;"
 				/>
 			</g>
-		</symbol>
-		<symbol id="wrook" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="wrook" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -405,8 +423,8 @@ function get_symbol_for_piece(piece) {
 				<path d="M 31,29.5 L 32.5,32 L 12.5,32 L 14,29.5" />
 				<path d="M 11,14 L 34,14" style="fill:none; stroke:#000000; stroke-linejoin:miter;" />
 			</g>
-		</symbol>
-		<symbol id="brook" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="brook" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<g
 				style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -448,8 +466,8 @@ function get_symbol_for_piece(piece) {
 					style="fill:none; stroke:#ffffff; stroke-width:1; stroke-linejoin:miter;"
 				/>
 			</g>
-		</symbol>
-		<symbol id="wpawn" viewBox="0 0 45 45">
+		</symbol> -->
+		<!-- <symbol id="wpawn" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>
 			<path
 				d="m 22.5,9 c -2.21,0 -4,1.79 -4,4 0,0.89 0.29,1.71 0.78,2.38 C 17.33,16.5 16,18.59 16,21 c 0,2.03 0.94,3.84 2.41,5.03 C 15.41,27.09 11,31.58 11,39.5 H 34 C 34,31.58 29.59,27.09 26.59,26.03 28.06,24.84 29,23.03 29,21 29,18.59 27.67,16.5 25.72,15.38 26.21,14.71 26.5,13.89 26.5,13 c 0,-2.21 -1.79,-4 -4,-4 z"
@@ -462,7 +480,7 @@ function get_symbol_for_piece(piece) {
 				d="m 22.5,9 c -2.21,0 -4,1.79 -4,4 0,0.89 0.29,1.71 0.78,2.38 C 17.33,16.5 16,18.59 16,21 c 0,2.03 0.94,3.84 2.41,5.03 C 15.41,27.09 11,31.58 11,39.5 H 34 C 34,31.58 29.59,27.09 26.59,26.03 28.06,24.84 29,23.03 29,21 29,18.59 27.67,16.5 25.72,15.38 26.21,14.71 26.5,13.89 26.5,13 c 0,-2.21 -1.79,-4 -4,-4 z"
 				style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:nonzero; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:miter; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
 			/>
-		</symbol>
+		</symbol> -->
 	</svg>
 </div>
 

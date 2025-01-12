@@ -91,17 +91,13 @@ export class Game {
 		return this.valid_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
 	}
 
-	/**
-	 * @returns {Move | null}
-	 */
+	/** @returns {Move | null} */
 	get_random_legal_move() {
 		let len = this.valid_moves.length
 		return len > 0 ? this.valid_moves[Math.floor(Math.random() * len)] : null
 	}
 
-	/**
-	 * @param {number} side
-	 */
+	/** @param {number} side */
 	resign(side) {
 		if (side == 1) this.resign_white()
 		else if (side == -1) this.resign_black()

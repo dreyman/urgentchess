@@ -50,14 +50,13 @@ const Square = {
 	f8: 61,
 	g8: 62,
 	h8: 63,
-
 }
 
 /**
- * @typedef {Object} Scope
- * @property {Record<string, number>} [rank]
- * @property {Record<string, number>} [file]
- * @property {Record<string, number>} [diag]
+ * @typedef {Object} Scope]
+ * @property {{from: number, to: number}} [rank]
+ * @property {{from: number, to: number}} [file]
+ * @property {{from: number, to: number}} [diag]
  * @property {number} [square]
  * @property {boolean} [escape]
  */
