@@ -6,10 +6,8 @@ export class Game {
 	/** @type {number[]} */
 	board = $state([])
 	clock
-
 	/** @type {GameContext} */
 	context = $state(chess.create_context(this.board, []))
-
 	/** @type {Move[]} */
 	valid_moves = []
 
@@ -75,7 +73,9 @@ export class Game {
 		}
 
 		// automatic draw if only two kings are left on the board
-		let other_piece = this.board.findIndex(p => p != 0 && p != chess.Piece.black_king && p != chess.Piece.white_king)
+		let other_piece = this.board.findIndex(
+			p => p != 0 && p != chess.Piece.black_king && p != chess.Piece.white_king
+		)
 		if (other_piece == -1) {
 			this.end_with_draw()
 		}

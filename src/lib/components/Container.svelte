@@ -65,9 +65,7 @@ function draggable(el) {
 		document.onmousemove = drag
 	}
 
-	/**
-	 * @param {MouseEvent} e
-	 */
+	/** @param {MouseEvent} e */
 	function drag(e) {
 		dragging = true
 		left = top = ''
@@ -95,6 +93,10 @@ function draggable(el) {
 	function end_drag() {
 		dragging = false
 		el.style.width = el.clientWidth + 'px'
+		if (el.offsetLeft > window.innerWidth - el.clientWidth)
+			el.style.left = window.innerWidth - el.clientWidth + 'px'
+		if (el.offsetTop > window.innerHeight - el.clientHeight)
+			el.style.top = window.innerHeight - el.clientHeight + 'px'
 		if (height != 'auto') el.style.height = el.clientHeight + 'px'
 		document.onmouseup = null
 		document.onmousemove = null

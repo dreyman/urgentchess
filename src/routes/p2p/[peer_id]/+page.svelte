@@ -23,6 +23,7 @@ let status = $state('')
 let game_count = $state(1)
 /** @type {any[]} */
 let p2p_messages = $state([])
+let title = $derived('Game ' + game_count + (game.result_message ? ': ' + game.result_message : ''))
 
 onDestroy(() => {
 	peer.destroy()
@@ -113,6 +114,7 @@ function get_game_data(game) {
 	}
 }
 
+/** @param {any} game_data */
 function get_game_from_data(game_data) {
 	let white_clock_active = game_data.moves.length > 1 && game_data.moves.length % 2 == 0
 	let black_clock_active = game_data.moves.length > 1 && game_data.moves.length % 2 == 1
@@ -137,7 +139,7 @@ function get_game_from_data(game_data) {
 	{#if game}
 		{#key game_count}
 			<Container
-				title={'Game ' + game_count}
+				{title}
 				resize="horizontal"
 				minwidth={100}
 				width={400}

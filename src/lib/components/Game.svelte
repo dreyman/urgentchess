@@ -32,7 +32,14 @@ function on_black_timeout() {
 	{#key game}
 		<Time time={game.clock.time1} ontimeout={on_white_timeout} />
 		<div class="w-full">
-			<ChessBoard board={game.board} onmove={on_board_move} {side} {orientation} last_move={game.last_move}>
+			<ChessBoard
+				board={game.board}
+				onmove={on_board_move}
+				{side}
+				{orientation}
+				last_move={game.last_move}
+				context={game.context}
+			>
 				{#if game.result_message != ''}
 					<div class="board-overlay">
 						<h1 class="board-message">{game.result_message}</h1>
@@ -49,7 +56,7 @@ function on_black_timeout() {
 	position: absolute;
 	inset: 0;
 	background: rgba(0, 0, 0, 0.25);
-/*	backdrop-filter: blur(0px);*/
+	/*	backdrop-filter: blur(0px);*/
 	display: flex;
 	flex-direction: column;
 	justify-content: center;

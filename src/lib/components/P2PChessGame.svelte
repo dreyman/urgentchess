@@ -1,3 +1,7 @@
+<!--
+TODO:
+- ping/latency
+ -->
 <script>
 import { untrack } from 'svelte'
 import Game from '$lib/components/Game.svelte'

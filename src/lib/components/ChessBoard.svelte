@@ -10,13 +10,14 @@ TODO:
 - 2 more orientations
 */
 import { piece_name } from '$lib/chess/util.js'
+import { Piece } from '$lib/chess/chess.js'
 import { appconfig } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
 import move_sound from '$lib/audio/move.mp3'
 
-let { board, onmove, side = 0, orientation: ori, last_move, children } = $props()
+let { board, onmove, side = 0, orientation: ori, last_move, context = {}, children } = $props()
 let selected_piece = $state(-1)
-let config = appconfig.board
+let config = appconfig.board // FIXME instead of importing config, should get it from the props
 /** @type {HTMLElement} */
 let drag_el
 let dragging = $state(false)
@@ -156,6 +157,9 @@ function get_symbol_for_piece(piece) {
 			{#if piece != 0}
 				{@const x = (idx % 8) * ori - 3.5 * (ori - 1)}
 				{@const y = -ori * Math.floor(idx / 8) + 3.5 * (ori + 1)}
+				{#if config.highlight_king_in_check && ((context.white_in_check && piece == Piece.white_king) || (context.black_in_check && piece == Piece.black_king))}
+					<circle cx={x + 0.5} cy={y + 0.5} r="0.5" fill="url('#king_in_check_gradient')" />
+				{/if}
 				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<use
@@ -174,6 +178,14 @@ function get_symbol_for_piece(piece) {
 			{/if}
 		{/each}
 		<use bind:this={drag_el} width="1" height="1" style:display={dragging ? 'block' : 'none'} />
+
+		<defs>
+			<radialGradient id="king_in_check_gradient">
+				<stop offset="0%" stop-color="#ff0000" />
+				<stop offset="40%" stop-color="#ff0000aa" />
+				<stop offset="100%" stop-color="#ff000000" />
+			</radialGradient>
+		</defs>
 
 		<symbol id="wking" viewBox="0 0 45 45">
 			<rect width="45" height="45" opacity="0"></rect>

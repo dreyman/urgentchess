@@ -29,12 +29,21 @@ function submit() {
 	</div>
 	<button
 		onclick={submit}
-		class="submit font-2xl mt-8 bg-green-600 px-4 py-1 font-bold text-white hover:bg-green-500"
+		class="submit mt-8 px-4 py-1 font-bold"
 		>submit
 	</button>
 </div>
 
 <style>
+.submit {
+	background: #7cacf8;
+	color: #272727;
+}
+
+.submit:hover {
+	background: #a8c7fa
+}
+
 .submit,
 .select-side-group > button {
 	min-width: 7rem;

@@ -25,6 +25,7 @@ function toggle_about() {}
 
 {@render children()}
 
+<!-- TODO make it possible to close settings with ESC -->
 {#if settings_visible}
 	<Container
 		title="Settings"

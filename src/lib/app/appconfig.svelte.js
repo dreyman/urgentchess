@@ -16,17 +16,19 @@ export const board_themes = [
 	}
 ]
 
+const default_theme = board_themes[0]
+
 const default_config = {
 	board: {
-		theme: board_themes[1],
 		sounds: true,
 		colors: {
-			light: '#f0d9b5',
-			dark: '#b58863',
+			light: default_theme.light,
+			dark: default_theme.dark,
 			selected_piece: '#a186f1',
 			last_move: '#ccd169',
 		},
 		highlight_last_move: true,
+		highlight_king_in_check: true,
 		animations: false, // TODO impl for true
 		piece_shadow_opacity: 0.4,
 		piece_size: 0,

@@ -1,3 +1,10 @@
+<!--
+TODO
+- add controls (range input for speed/interval)
+- mb add some prop to the board component so that it's possible to pass a snippet that
+	will be rendered aside of the board and then use that prop for random game controls
+	(it could also be used for p2p game controls and mb even for clock timers)
+ -->
 <script>
 import Game from '$lib/components/Game.svelte'
 import Container from '$lib/components/Container.svelte'
