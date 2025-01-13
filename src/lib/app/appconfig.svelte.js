@@ -31,6 +31,7 @@ const default_config = {
 			last_move: '#ccd169',
 		},
 		piece_set: default_piece_set,
+		piece_set_svg_content: '',
 		highlight_last_move: true,
 		highlight_king_in_check: true,
 		animations: false, // TODO impl for true

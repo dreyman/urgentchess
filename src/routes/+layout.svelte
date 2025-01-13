@@ -2,9 +2,11 @@
 import '../app.css'
 import Container from '$lib/components/Container.svelte'
 import AppSettings from '$lib/components/AppSettings.svelte'
+import { appconfig } from '$lib/app/appconfig.svelte.js'
 
-let { children } = $props()
+let { data, children } = $props()
 let settings_visible = $state(false)
+appconfig.board.piece_set_svg_content = data.piece_set_content
 
 function toggle_settings() {
 	settings_visible = !settings_visible

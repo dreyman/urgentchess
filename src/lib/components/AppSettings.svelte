@@ -1,8 +1,18 @@
 <script>
 import { appconfig, board_themes, piece_sets } from '$lib/app/appconfig.svelte.js'
+import { onMount } from 'svelte'
 
 let active_tab = $state('board')
 let board_colors = appconfig.board.colors
+
+/** @param {string} name */
+async function use_piece_set(name) {
+	// TODO mb should cache loaded svg content
+	let resp = await fetch('/piece_sets/' + name + '.svg')
+	let svg = await resp.text()
+	appconfig.board.piece_set_svg_content = svg
+	appconfig.board.piece_set = name
+}
 </script>
 
 <ul class="tabs flex items-center">
@@ -61,7 +71,7 @@ let board_colors = appconfig.board.colors
 		<div class="flex items-center">
 			<span class="mr-2">Piece set:</span>
 			{#each piece_sets as piece_set}
-				<button onclick={() => appconfig.board.piece_set = piece_set}
+				<button onclick={() => use_piece_set(piece_set)}
 					class="piece-set-btn py-1 px-2"
 					class:active={appconfig.board.piece_set == piece_set}
 				>
