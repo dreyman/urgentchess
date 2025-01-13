@@ -168,7 +168,7 @@ function get_symbol_for_piece(piece) {
 					y={y - 0.01 * config.piece_size}
 					data-square={idx}
 					data-side={side}
-					data-draggable={side == 0 || side / piece > 0}
+					data-draggable={side == 0 || piece / side > 0}
 					data-x={x}
 					data-y={y}
 					width={1 + 0.02 * config.piece_size}

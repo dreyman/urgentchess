@@ -93,10 +93,15 @@ function draggable(el) {
 	function end_drag() {
 		dragging = false
 		el.style.width = el.clientWidth + 'px'
+		// FIXME also handle maxwidth & height here
 		if (el.offsetLeft > window.innerWidth - el.clientWidth)
 			el.style.left = window.innerWidth - el.clientWidth + 'px'
+		else if (el.offsetLeft < 0)
+			el.style.left = '0'
 		if (el.offsetTop > window.innerHeight - el.clientHeight)
 			el.style.top = window.innerHeight - el.clientHeight + 'px'
+		else if (el.offsetTop < 0)
+			el.style.top = '0'
 		if (height != 'auto') el.style.height = el.clientHeight + 'px'
 		document.onmouseup = null
 		document.onmousemove = null

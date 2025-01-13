@@ -7,7 +7,7 @@ export const board_themes = [
 	{
 		name: 'Rigor',
 		light: '#a8c7fa',
-		dark: '#828282'
+		dark: '#8a8a8a'
 	},
 	{
 		name: 'Fancy',
@@ -16,7 +16,7 @@ export const board_themes = [
 	}
 ]
 
-export const piece_sets = ['default', 'horsey']
+export const piece_sets = ['default', 'horsey', 'anarcandy']
 
 const default_theme = board_themes[0]
 const default_piece_set = piece_sets[0]
