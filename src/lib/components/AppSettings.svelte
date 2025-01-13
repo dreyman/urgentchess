@@ -1,6 +1,5 @@
 <script>
 import { appconfig, board_themes, piece_sets } from '$lib/app/appconfig.svelte.js'
-import { onMount } from 'svelte'
 
 let active_tab = $state('board')
 let board_colors = appconfig.board.colors

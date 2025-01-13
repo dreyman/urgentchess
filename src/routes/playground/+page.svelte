@@ -2,6 +2,7 @@
 import { Game as ChessGame, Clock } from '$lib/app/model.svelte.js'
 import Game from '$lib/components/Game.svelte'
 import Container from '$lib/components/Container.svelte'
+import Loading from '$lib/components/Loading.svelte'
 
 let time = 12 * 60_000
 let game = new ChessGame(new Clock(time, time, time, 2_000))

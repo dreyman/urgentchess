@@ -1,5 +1,5 @@
 <script>
-import ChessBoard from '$lib/components/ChessBoard.svelte'
+import SvgBoard from '$lib/components/SvgBoard.svelte'
 import Time from '$lib/components/Time.svelte'
 
 /** @type {{ game: import('$lib/app/model.svelte.js').Game, side: Side, onmove?: function(Move):void }} */
@@ -32,7 +32,7 @@ function on_black_timeout() {
 	{#key game}
 		<Time time={game.clock.time1} ontimeout={on_white_timeout} />
 		<div class="w-full">
-			<ChessBoard
+			<SvgBoard
 				board={game.board}
 				onmove={on_board_move}
 				{side}
@@ -45,7 +45,7 @@ function on_black_timeout() {
 						<h1 class="board-message">{game.result_message}</h1>
 					</div>
 				{/if}
-			</ChessBoard>
+			</SvgBoard>
 		</div>
 		<Time time={game.clock.time2} ontimeout={on_black_timeout} />
 	{/key}
@@ -56,7 +56,7 @@ function on_black_timeout() {
 	position: absolute;
 	inset: 0;
 	background: rgba(0, 0, 0, 0.25);
-	/*	backdrop-filter: blur(0px);*/
+	backdrop-filter: blur(1px);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
