@@ -2,7 +2,7 @@
 import { Game as ChessGame, Clock } from '$lib/app/model.svelte.js'
 import Game from '$lib/components/Game.svelte'
 import Container from '$lib/components/Container.svelte'
-import Loading from '$lib/components/Loading.svelte'
+// import CanvasBoard from '$lib/components/CanvasBoard.svelte'
 
 let time = 12 * 60_000
 let game = new ChessGame(new Clock(time, time, time, 2_000))
@@ -29,5 +29,17 @@ function onmove() {}
 	<Game {game} {side} {onmove} />
 </Container>
 
+<!-- <Container
+	{title}
+	resize="horizontal"
+	minwidth={250}
+	width={500}
+	height="auto"
+	left="center"
+	top="center"
+>
+	<CanvasBoard />
+</Container>
+ -->
 <style>
 </style>

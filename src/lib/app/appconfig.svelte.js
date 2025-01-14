@@ -29,6 +29,7 @@ const default_config = {
 			dark: default_theme.dark,
 			selected_piece: '#a186f1',
 			last_move: '#ccd169',
+			promotion_piece_bg: '#ccd169'
 		},
 		piece_set: default_piece_set,
 		piece_set_svg_content: '',

@@ -66,6 +66,7 @@ const Square = {
  * @property {number} from
  * @property {number} to
  * @property {boolean} [capture]
+ * @property {number} [promotion_piece]
  */
 
 /**

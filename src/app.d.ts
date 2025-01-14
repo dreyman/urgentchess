@@ -14,7 +14,8 @@ declare global {
 	interface Move {
 		from: number
 		to: number
-		capture?: boolean
+		capture?: boolean,
+		promotion_piece?: number
 	}
 
 	type Color = -1 | 1

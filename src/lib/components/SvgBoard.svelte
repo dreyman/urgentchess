@@ -8,7 +8,7 @@ TODO:
 - add mute board button in the title
 - 2 more orientations
 */
-import { piece_name } from '$lib/chess/util.js'
+import * as util from '$lib/chess/util.js'
 import { Piece, Color } from '$lib/chess/chess.js'
 import { appconfig } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
@@ -20,15 +20,16 @@ let config = appconfig.board // FIXME instead of importing config, should get it
 /** @type {HTMLElement} */
 let drag_el
 let dragging = $state(false)
+let pawn_promotion_select = $state({ visible: false })
 // let move_audio = new Audio(move_sound)
 // let capture_audio = new Audio(capture_sound)
 
-$effect(() => {
-	if (!ori) {
-		if (side == 0) ori = Math.random() > 0.5 ? 1 : -1
-		else ori = side
-	}
-})
+// $effect(() => {
+// 	if (!ori) {
+// 		if (side == 0) ori = Math.random() > 0.5 ? 1 : -1
+// 		else ori = side
+// 	}
+// })
 
 $effect(() => {
 	if (last_move && config.sounds) {
@@ -101,7 +102,20 @@ function board_dnd(el) {
 	}
 }
 
-function apply_move(move) {
+/**
+ * @param {Move} move
+ * @param {number} [promotion_piece]
+ */
+function apply_move(move, promotion_piece) {
+	if (!promotion_piece && util.is_pawn_promotion(move, board)) {
+		pawn_promotion_select = {
+			visible: true,
+			move,
+		}
+		return
+	}
+	pawn_promotion_select.visible = false
+	if (promotion_piece) move.promotion_piece = promotion_piece
 	let moved = onmove(move)
 	if (moved) selected_piece = -1
 }
@@ -114,7 +128,7 @@ function get_symbol_for_piece(piece) {
 	let id = '#'
 	if (piece < 0) id += 'b'
 	else if (piece > 0) id += 'w'
-	id += piece_name(piece)
+	id += util.piece_name(piece)
 	return id
 }
 </script>
@@ -176,7 +190,70 @@ function get_symbol_for_piece(piece) {
 				/>
 			{/if}
 		{/each}
+
 		<use bind:this={drag_el} width="1" height="1" style:display={dragging ? 'block' : 'none'} />
+
+		{#if pawn_promotion_select.visible}
+			{@const color = pawn_promotion_select.move.to < 8 ? Color.black : Color.white}
+			<!-- {@const inc = pawn_promotion_select.move.to < 8 ? 8 : -8} -->
+			{@const x = (pawn_promotion_select.move.to % 8) * ori - 3.5 * (ori - 1)}
+			{@const queen_y = -ori * Math.floor(pawn_promotion_select.move.to / 8) + 3.5 * (ori + 1)}
+			{@const knight_y = queen_y + color * ori}
+			{@const rook_y = queen_y + 2 * color * ori}
+			{@const bishop_y = queen_y + 3 * color * ori}
+
+			<rect {x} y={queen_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<use
+				href={get_symbol_for_piece(color * Piece.queen)}
+				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.queen)}
+				x={x - 0.01 * config.piece_size}
+				y={queen_y - 0.01 * config.piece_size}
+				width={1 + 0.02 * config.piece_size}
+				height={1 + 0.02 * config.piece_size}
+				class="animate-pulse-1"
+			/>
+
+			<rect {x} y={knight_y} width="1" height="1"fill={config.colors.promotion_piece_bg} />
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<use
+				href={get_symbol_for_piece(color * Piece.knight)}
+				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.knight)}
+				x={x - 0.01 * config.piece_size}
+				y={knight_y - 0.01 * config.piece_size}
+				width={1 + 0.02 * config.piece_size}
+				height={1 + 0.02 * config.piece_size}
+				class="animate-pulse-1"
+			/>
+
+			<rect {x} y={rook_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<use
+				href={get_symbol_for_piece(color * Piece.rook)}
+				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.rook)}
+				x={x - 0.01 * config.piece_size}
+				y={rook_y - 0.01 * config.piece_size}
+				width={1 + 0.02 * config.piece_size}
+				height={1 + 0.02 * config.piece_size}
+				class="animate-pulse-1"
+			/>
+
+			<rect {x} y={bishop_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<use
+				href={get_symbol_for_piece(color * Piece.bishop)}
+				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.bishop)}
+				x={x - 0.01 * config.piece_size}
+				y={bishop_y - 0.01 * config.piece_size}
+				width={1 + 0.02 * config.piece_size}
+				height={1 + 0.02 * config.piece_size}
+				class="animate-pulse-1"
+			/>
+		{/if}
 
 		<defs>
 			<radialGradient id="king_in_check_gradient">

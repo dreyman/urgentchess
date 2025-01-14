@@ -121,7 +121,11 @@ export function apply_move(move, board, context) {
 	}
 	// pawn promotion
 	else if (is_pawn_promotion(move, board)) {
-		board[move.to] = color(board[move.from]) * P.queen
+		if (board[move.to] != 0) move.capture = true
+		if (move.promotion_piece)
+			board[move.to] = move.promotion_piece
+		else
+			board[move.to] = color(board[move.from]) * P.queen
 		board[move.from] = 0
 	} else {
 		if (board[move.to] != 0) move.capture = true
