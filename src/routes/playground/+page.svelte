@@ -27,6 +27,11 @@ function onmove() {}
 	top="center"
 >
 	<Game {game} {side} {onmove} />
+	{#if game.result_message != ''}
+		<div class="board-overlay">
+			<h1 class="board-message">{game.result_message}</h1>
+		</div>
+	{/if}
 </Container>
 
 <!-- <Container
@@ -42,4 +47,21 @@ function onmove() {}
 </Container>
  -->
 <style>
+.board-overlay {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.25);
+	backdrop-filter: blur(1px);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.board-message {
+	background: rgba(0, 0, 0, 0.5);
+	text-align: center;
+	color: #fff;
+	font-size: 2rem;
+	font-weight: bold;
+}
 </style>

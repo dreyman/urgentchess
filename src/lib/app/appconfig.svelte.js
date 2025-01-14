@@ -5,6 +5,11 @@ export const board_themes = [
 		dark: '#b58863',
 	},
 	{
+		name: 'Chesscom',
+		light: '#eeeed1',
+		dark: '#759655',
+	},
+	{
 		name: 'Rigor',
 		light: '#a8c7fa',
 		dark: '#8a8a8a'

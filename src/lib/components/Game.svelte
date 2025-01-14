@@ -9,10 +9,9 @@ let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
 /** @param {Move} move */
 function on_board_move(move) {
 	// FIXME shouldn't be possible to move if clock is not running
-	if (game.is_legal_move(move)) {
-		onmove(move)
-	}
-	return game.move(move)
+	onmove(move)
+	game.apply_legal_move(move)
+	return true
 }
 
 function on_white_timeout() {
@@ -38,13 +37,9 @@ function on_black_timeout() {
 				{side}
 				{orientation}
 				last_move={game.last_move}
+				legal_moves={game.valid_moves}
 				context={game.context}
 			>
-				{#if game.result_message != ''}
-					<div class="board-overlay">
-						<h1 class="board-message">{game.result_message}</h1>
-					</div>
-				{/if}
 			</SvgBoard>
 		</div>
 		<Time time={game.clock.time2} ontimeout={on_black_timeout} />
@@ -52,21 +47,4 @@ function on_black_timeout() {
 </div>
 
 <style>
-.board-overlay {
-	position: absolute;
-	inset: 0;
-	background: rgba(0, 0, 0, 0.25);
-	backdrop-filter: blur(1px);
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
-.board-message {
-	background: rgba(0, 0, 0, 0.5);
-	text-align: center;
-	color: #fff;
-	font-size: 2rem;
-	font-weight: bold;
-}
 </style>

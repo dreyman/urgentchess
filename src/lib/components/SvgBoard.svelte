@@ -14,13 +14,25 @@ import { appconfig } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
 import move_sound from '$lib/audio/move.mp3'
 
-let { board, onmove, side = 0, orientation: ori, last_move, context = {}, children } = $props()
+/** @type {{
+ * board: number[]
+ * onmove: function(Move):boolean
+ * side: Side
+ * orientation: -1 | 1
+ * last_move: Move
+ * context?: GameContext | {}
+ * legal_moves: Move[]
+ }} */
+let { board, onmove, side = 0, orientation: ori, last_move, context = {}, legal_moves } = $props()
 let selected_piece = $state(-1)
 let config = appconfig.board // FIXME instead of importing config, should get it from the props
-/** @type {HTMLElement} */
+/** @type {SVGUseElement} */
 let drag_el
 let dragging = $state(false)
-let pawn_promotion_select = $state({ visible: false })
+// FIXME get rid of last_move prop, get last move from context.moves instead
+// let last_move = $derived(context && cotext.moves && contxet.moves.length > 0 ? context.moves[context.moves.length - 1] : null)
+/** @type {{visible: boolean, move: Move}} */
+let pawn_promotion_select = $state({ visible: false, move: { from: 0, to: 1 } })
 // let move_audio = new Audio(move_sound)
 // let capture_audio = new Audio(capture_sound)
 
@@ -38,14 +50,17 @@ $effect(() => {
 	}
 })
 
+/** @param {number} sq */
 function on_square_click(sq) {
 	if (selected_piece != -1 && board[sq] / board[selected_piece] <= 0) {
 		apply_move({ from: selected_piece, to: sq })
 	}
 }
 
+/** @param {SVGSVGElement} el */
 function board_dnd(el) {
 	let board_svg = el
+	/** @type {HTMLElement | null} */
 	let drag_piece = null
 	el.addEventListener('mousedown', on_drag_start)
 	el.addEventListener('mousemove', on_drag)
@@ -54,37 +69,43 @@ function board_dnd(el) {
 	el.addEventListener('touchstart', on_drag_start)
 	el.addEventListener('touchmove', on_drag)
 	el.addEventListener('touchend', on_drag_end)
-	el.addEventListener('touchleave', on_drag_end)
+	// el.addEventListener('touchleave', on_drag_end)
 	el.addEventListener('touchcancel', on_drag_end)
 
+	/** @param {MouseEvent | TouchEvent} e */
 	function on_drag_start(e) {
-		if (e.target.dataset.draggable == 'true') {
+		/** @type {EventTarget | null} */
+		let target = e.target
+		if (target && (target instanceof HTMLElement) && target.dataset.draggable == 'true') {
 			e.preventDefault()
-			let square = +e.target.dataset.square
+			if (!target.dataset.square) return
+			let square = +target.dataset.square
 			selected_piece = selected_piece == square ? -1 : square
-			drag_piece = e.target
-			drag_piece.setAttributeNS(null, 'opacity', config.piece_shadow_opacity)
+			drag_piece = target
+			drag_piece.setAttributeNS(null, 'opacity', config.piece_shadow_opacity.toString())
 			drag_el.setAttributeNS(null, 'href', get_symbol_for_piece(board[square]))
-			drag_el.dataset.square = +e.target.dataset.square
+			drag_el.dataset.square = target.dataset.square
 			let mouse = get_mouse_position(e)
-			drag_el.setAttributeNS(null, 'x', mouse.x - 0.5)
-			drag_el.setAttributeNS(null, 'y', mouse.y - 0.5)
+			drag_el.setAttributeNS(null, 'x', (mouse.x - 0.5).toString())
+			drag_el.setAttributeNS(null, 'y', (mouse.y - 0.5).toString())
 			dragging = true
 		}
 	}
 
+	/** @param {MouseEvent | TouchEvent} e */
 	function on_drag(e) {
 		if (dragging) {
 			e.preventDefault()
 			let mouse = get_mouse_position(e)
-			drag_el.setAttributeNS(null, 'x', mouse.x - 0.5)
-			drag_el.setAttributeNS(null, 'y', mouse.y - 0.5)
+			drag_el.setAttributeNS(null, 'x', (mouse.x - 0.5).toString())
+			drag_el.setAttributeNS(null, 'y', (mouse.y - 0.5).toString())
 		}
 	}
 
+	/** @param {MouseEvent | TouchEvent} e */
 	function on_drag_end(e) {
-		if (dragging) {
-			drag_piece.setAttributeNS(null, 'opacity', 1)
+		if (dragging && drag_piece) {
+			drag_piece.setAttributeNS(null, 'opacity', '1')
 			let pos = get_mouse_position(e)
 			let move = { from: +drag_el.dataset.square, to: get_square_idx(pos) }
 			if (move.from != move.to) apply_move(move)
@@ -92,12 +113,16 @@ function board_dnd(el) {
 		dragging = false
 	}
 
-	function get_mouse_position(evt) {
+	/**
+	 * @param {any} event
+	 * @returns {{x: number, y: number}}
+	 */
+	function get_mouse_position(event) {
 		let { e, a, f, d } = board_svg.getScreenCTM()
-		if (evt.changedTouches) evt = evt.changedTouches[0]
+		if (event.changedTouches) event = event.changedTouches[0]
 		return {
-			x: (evt.clientX - e) / a,
-			y: (evt.clientY - f) / d,
+			x: (event.clientX - e) / a,
+			y: (event.clientY - f) / d,
 		}
 	}
 }
@@ -107,6 +132,8 @@ function board_dnd(el) {
  * @param {number} [promotion_piece]
  */
 function apply_move(move, promotion_piece) {
+	let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
+	if (!is_legal_move) return
 	if (!promotion_piece && util.is_pawn_promotion(move, board)) {
 		pawn_promotion_select = {
 			visible: true,
@@ -120,10 +147,12 @@ function apply_move(move, promotion_piece) {
 	if (moved) selected_piece = -1
 }
 
+/** @param {{x: number, y: number}} xy */
 function get_square_idx({ x, y }) {
 	return (-ori * Math.floor(y) + (ori + 1) * 3.5) * 8 - 3.5 * (ori - 1) + ori * Math.floor(x)
 }
 
+/** @param {number} piece */
 function get_symbol_for_piece(piece) {
 	let id = '#'
 	if (piece < 0) id += 'b'
@@ -133,139 +162,125 @@ function get_symbol_for_piece(piece) {
 }
 </script>
 
-<div class="relative">
-	{#if children}
-		{@render children()}
-	{/if}
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		xmlns:x="http://www.w3.org/1999/xlink"
-		viewBox="0 0 8 8"
-		use:board_dnd
-	>
-		{#each { length: 8 }, file}
-			{#each { length: 8 }, rank}
-				{@const sq_idx = get_square_idx({ x: file, y: rank })}
-				{@const square_color = (rank + file) % 2 == 1 ? config.colors.dark : config.colors.light}
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<rect
-					onclick={() => on_square_click(sq_idx)}
-					width="1"
-					height="1"
-					x={file}
-					y={rank}
-					fill={sq_idx == selected_piece
-						? `color-mix(in srgb, ${square_color} 50%, ${config.colors.selected_piece} 70%`
-						: config.highlight_last_move &&
-							  last_move &&
-							  (last_move.from == sq_idx || last_move.to == sq_idx)
-							? `color-mix(in srgb, ${square_color} 50%, ${config.colors.last_move} 70%`
-							: square_color}
-					id={file + rank}
-				/>
-			{/each}
-		{/each}
-		{#each board as piece, idx}
-			{#if piece != 0}
-				{@const x = (idx % 8) * ori - 3.5 * (ori - 1)}
-				{@const y = -ori * Math.floor(idx / 8) + 3.5 * (ori + 1)}
-				{#if config.highlight_king_in_check && ((context.white_in_check && piece == Piece.white_king) || (context.black_in_check && piece == Piece.black_king))}
-					<circle cx={x + 0.5} cy={y + 0.5} r="0.5" fill="url('#king_in_check_gradient')" />
-				{/if}
-				<!-- svelte-ignore a11y_no_static_element_interactions -->
-				<!-- svelte-ignore a11y_click_events_have_key_events -->
-				<use
-					href={get_symbol_for_piece(piece)}
-					onclick={() => on_square_click(idx)}
-					x={x - 0.01 * config.piece_size}
-					y={y - 0.01 * config.piece_size}
-					data-square={idx}
-					data-side={side}
-					data-draggable={side == 0 || piece / side > 0}
-					data-x={x}
-					data-y={y}
-					width={1 + 0.02 * config.piece_size}
-					height={1 + 0.02 * config.piece_size}
-				/>
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:x="http://www.w3.org/1999/xlink"
+	viewBox="0 0 8 8"
+	use:board_dnd
+>
+	<defs>
+		<radialGradient id="king_in_check_gradient">
+			<stop offset="0%" stop-color="#ff0000" />
+			<stop offset="40%" stop-color="#ff0000aa" />
+			<stop offset="100%" stop-color="#ff000000" />
+		</radialGradient>
+	</defs>
+
+	{@html config.piece_set_svg_content}
+
+	{#each board as piece, sq}
+		{@const x = (sq % 8) * ori - 3.5 * (ori - 1)}
+		{@const y = -ori * Math.floor(sq / 8) + 3.5 * (ori + 1)}
+		{@const file = sq % 8}
+		{@const rank = Math.floor(sq / 8)}
+		{@const square_color = (rank + file) % 2 == 1 ? config.colors.dark : config.colors.light}
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<rect
+			onclick={() => on_square_click(sq)}
+			width="1"
+			height="1"
+			{x}
+			{y}
+			fill={sq == selected_piece
+				? `color-mix(in srgb, ${square_color} 50%, ${config.colors.selected_piece} 70%`
+				: config.highlight_last_move && last_move && (last_move.from == sq || last_move.to == sq)
+					? `color-mix(in srgb, ${square_color} 40%, ${config.colors.last_move} 70%`
+					: square_color}
+		/>
+		{#if piece != 0}
+			{@const draggable = side == 0 || piece / side > 0}
+			{#if config.highlight_king_in_check && ((context.white_in_check && piece == Piece.white_king) || (context.black_in_check && piece == Piece.black_king))}
+				<circle cx={x + 0.5} cy={y + 0.5} r="0.5" fill="url('#king_in_check_gradient')" />
 			{/if}
-		{/each}
-
-		<use bind:this={drag_el} width="1" height="1" style:display={dragging ? 'block' : 'none'} />
-
-		{#if pawn_promotion_select.visible}
-			{@const color = pawn_promotion_select.move.to < 8 ? Color.black : Color.white}
-			<!-- {@const inc = pawn_promotion_select.move.to < 8 ? 8 : -8} -->
-			{@const x = (pawn_promotion_select.move.to % 8) * ori - 3.5 * (ori - 1)}
-			{@const queen_y = -ori * Math.floor(pawn_promotion_select.move.to / 8) + 3.5 * (ori + 1)}
-			{@const knight_y = queen_y + color * ori}
-			{@const rook_y = queen_y + 2 * color * ori}
-			{@const bishop_y = queen_y + 3 * color * ori}
-
-			<rect {x} y={queen_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<use
-				href={get_symbol_for_piece(color * Piece.queen)}
-				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.queen)}
+				href={get_symbol_for_piece(piece)}
+				onclick={() => on_square_click(sq)}
 				x={x - 0.01 * config.piece_size}
-				y={queen_y - 0.01 * config.piece_size}
+				y={y - 0.01 * config.piece_size}
+				data-square={sq}
+				data-draggable={draggable}
 				width={1 + 0.02 * config.piece_size}
 				height={1 + 0.02 * config.piece_size}
-				class="animate-pulse-1"
-			/>
-
-			<rect {x} y={knight_y} width="1" height="1"fill={config.colors.promotion_piece_bg} />
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<use
-				href={get_symbol_for_piece(color * Piece.knight)}
-				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.knight)}
-				x={x - 0.01 * config.piece_size}
-				y={knight_y - 0.01 * config.piece_size}
-				width={1 + 0.02 * config.piece_size}
-				height={1 + 0.02 * config.piece_size}
-				class="animate-pulse-1"
-			/>
-
-			<rect {x} y={rook_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<use
-				href={get_symbol_for_piece(color * Piece.rook)}
-				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.rook)}
-				x={x - 0.01 * config.piece_size}
-				y={rook_y - 0.01 * config.piece_size}
-				width={1 + 0.02 * config.piece_size}
-				height={1 + 0.02 * config.piece_size}
-				class="animate-pulse-1"
-			/>
-
-			<rect {x} y={bishop_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
-			<!-- svelte-ignore a11y_no_static_element_interactions -->
-			<!-- svelte-ignore a11y_click_events_have_key_events -->
-			<use
-				href={get_symbol_for_piece(color * Piece.bishop)}
-				onclick={() => apply_move(pawn_promotion_select.move, color * Piece.bishop)}
-				x={x - 0.01 * config.piece_size}
-				y={bishop_y - 0.01 * config.piece_size}
-				width={1 + 0.02 * config.piece_size}
-				height={1 + 0.02 * config.piece_size}
-				class="animate-pulse-1"
 			/>
 		{/if}
+	{/each}
 
-		<defs>
-			<radialGradient id="king_in_check_gradient">
-				<stop offset="0%" stop-color="#ff0000" />
-				<stop offset="40%" stop-color="#ff0000aa" />
-				<stop offset="100%" stop-color="#ff000000" />
-			</radialGradient>
-		</defs>
+	<use bind:this={drag_el} width="1" height="1" style:display={dragging ? 'block' : 'none'} />
 
-		{@html config.piece_set_svg_content}
-	</svg>
-</div>
+	{#if pawn_promotion_select.visible}
+		{@const color = pawn_promotion_select.move.to < 8 ? Color.black : Color.white}
+		{@const x = (pawn_promotion_select.move.to % 8) * ori - 3.5 * (ori - 1)}
+		{@const queen_y = -ori * Math.floor(pawn_promotion_select.move.to / 8) + 3.5 * (ori + 1)}
+		{@const knight_y = queen_y + color * ori}
+		{@const rook_y = queen_y + 2 * color * ori}
+		{@const bishop_y = queen_y + 3 * color * ori}
+
+		<rect {x} y={queen_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<use
+			href={get_symbol_for_piece(color * Piece.queen)}
+			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.queen)}
+			x={x - 0.01 * config.piece_size}
+			y={queen_y - 0.01 * config.piece_size}
+			width={1 + 0.02 * config.piece_size}
+			height={1 + 0.02 * config.piece_size}
+			class="animate-pulse-1"
+		/>
+
+		<rect {x} y={knight_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<use
+			href={get_symbol_for_piece(color * Piece.knight)}
+			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.knight)}
+			x={x - 0.01 * config.piece_size}
+			y={knight_y - 0.01 * config.piece_size}
+			width={1 + 0.02 * config.piece_size}
+			height={1 + 0.02 * config.piece_size}
+			class="animate-pulse-1"
+		/>
+
+		<rect {x} y={rook_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<use
+			href={get_symbol_for_piece(color * Piece.rook)}
+			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.rook)}
+			x={x - 0.01 * config.piece_size}
+			y={rook_y - 0.01 * config.piece_size}
+			width={1 + 0.02 * config.piece_size}
+			height={1 + 0.02 * config.piece_size}
+			class="animate-pulse-1"
+		/>
+
+		<rect {x} y={bishop_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<use
+			href={get_symbol_for_piece(color * Piece.bishop)}
+			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.bishop)}
+			x={x - 0.01 * config.piece_size}
+			y={bishop_y - 0.01 * config.piece_size}
+			width={1 + 0.02 * config.piece_size}
+			height={1 + 0.02 * config.piece_size}
+			class="animate-pulse-1"
+		/>
+	{/if}
+</svg>
 
 <style>
 </style>

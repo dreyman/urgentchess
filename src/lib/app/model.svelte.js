@@ -28,14 +28,14 @@ export class Game {
 	)
 	// prettier-ignore
 	result_message = $derived(
-		this.white_timeout ? 'White time out. 0 - 1'
-		: this.black_timeout ? 'Black time out. 1 - 0'
-		: this.checkmate_white ? 'Checkmate. 0 - 1'
-		: this.checkmate_black ? 'Checkmate. 1 - 0'
-		: this.stalemate ? 'Stalemate. ½ - ½'
-		: this.white_resigned ? 'White resigned. 0 - 1'
-		: this.black_resigned ? 'Black resigned. 1 - 0'
-		: this.draw ? 'Draw. ½ - ½'
+		this.white_timeout ? 'White time out. 0-1'
+		: this.black_timeout ? 'Black time out. 1-0'
+		: this.checkmate_white ? 'Checkmate. 0-1'
+		: this.checkmate_black ? 'Checkmate. 1-0'
+		: this.stalemate ? 'Stalemate. ½-½'
+		: this.white_resigned ? 'White resigned. 0-1'
+		: this.black_resigned ? 'Black resigned. 1-0'
+		: this.draw ? 'Draw. ½-½'
 		: ''
 	)
 
@@ -51,13 +51,17 @@ export class Game {
 		this.valid_moves = chess.get_moves(this.board, this.context)
 	}
 
-	/**
-	 * @param {Move} move
-	 */
+	/** @param {Move} move */
 	move(move) {
 		if (this.clock.time1.val <= 0 || this.clock.time2.val <= 0 || !this.is_legal_move(move)) {
 			return false
 		}
+		this.apply_legal_move(move)
+		return true
+	}
+
+	/** @param {Move} move */
+	apply_legal_move(move) {
 		util.apply_move(move, this.board, this.context)
 
 		if (this.moves.length == 2) this.clock.start()
@@ -73,14 +77,12 @@ export class Game {
 		}
 
 		// automatic draw if only two kings are left on the board
-		let other_piece = this.board.findIndex(
+		let non_king_piece = this.board.findIndex(
 			p => p != 0 && p != chess.Piece.black_king && p != chess.Piece.white_king
 		)
-		if (other_piece == -1) {
+		if (non_king_piece == -1) {
 			this.end_with_draw()
 		}
-
-		return true
 	}
 
 	/**

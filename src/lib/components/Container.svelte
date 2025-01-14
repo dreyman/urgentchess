@@ -130,7 +130,7 @@ function draggable(el) {
 			{/if}
 		</h3>
 	{/if}
-	<div>{@render children()}</div>
+	<div class="relative">{@render children()}</div>
 </div>
 
 <style>
