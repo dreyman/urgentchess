@@ -32,7 +32,10 @@ const default_config = {
 		colors: {
 			light: default_theme.light,
 			dark: default_theme.dark,
-			selected_piece: '#a186f1',
+			// selected_piece: '#a186f1',
+			// FIXME selected piece/square color shouldn't be unique,
+			// but should be set in a board_theme
+			selected_piece: '#7babf8',
 			last_move: '#ccd169',
 			promotion_piece_bg: '#ccd169'
 		},

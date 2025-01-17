@@ -6,32 +6,37 @@
 
 // TODO add assertions for random game testing
 
+/** @typedef {-6 | -5 | -4 | -3 | -2 | -1 | 1 | 2 | 3 | 4 | 5 | 6} Piece */
+/** @typedef {-1 | 1} Color */
+
+/** @type {Record<string, Color>} */
 export const Color = {
 	white: 1,
 	black: -1
 }
 
-/** @type {Record<string, number>} */
+/** @type {Record<string, Piece>} */
 export const Piece = {
 	pawn: 1,
 	rook: 2,
 	knight: 3,
 	bishop: 4,
 	king: 5,
-	queen: 6
+	queen: 6,
+	white_pawn: 1,
+	black_pawn: -1,
+	white_rook: 2,
+	black_rook: -2,
+	white_bishop: 4,
+	black_bishop: -4,
+	white_knight: 3,
+	black_knight: -3,
+	white_queen: 6,
+	black_queen: -6,
+	white_king: 5,
+	black_king: -5,
+
 }
-Piece.white_pawn = Color.white * Piece.pawn
-Piece.black_pawn = Color.black * Piece.pawn
-Piece.white_rook = Color.white * Piece.rook
-Piece.black_rook = Color.black * Piece.rook
-Piece.white_bishop = Color.white * Piece.bishop
-Piece.black_bishop = Color.black * Piece.bishop
-Piece.white_knight = Color.white * Piece.knight
-Piece.black_knight = Color.black * Piece.knight
-Piece.white_queen = Color.white * Piece.queen
-Piece.black_queen = Color.black * Piece.queen
-Piece.white_king = Color.white * Piece.king
-Piece.black_king = Color.black * Piece.king
 
 const Square = {
 	a1: 0,
@@ -174,32 +179,6 @@ export function get_moves(board, context) {
 		}
 	}
 	return moves
-}
-
-/**
- * @param {number} sq - square where king is positioned
- * @param {number[]} b board
- * @param {Move[]} previous_moves
- * @returns {Move[]}
- */
-export function get_king_moves_for(sq, b, previous_moves) {
-	let color = b[sq] > 0 ? Color.white : Color.black
-	let oo = true
-	let ooo = true
-	if (color == Color.white) {
-		previous_moves.forEach(m => {
-			if (m.from == 4) oo = ooo = false
-			if (m.from == 7) oo = false
-			if (m.from == 0) ooo = false
-		})
-	} else {
-		previous_moves.forEach(m => {
-			if (m.from == 60) oo = ooo = false
-			if (m.from == 63) oo = false
-			if (m.from == 56) ooo = false
-		})
-	}
-	return get_king_moves(sq, b, oo, ooo)
 }
 
 /**

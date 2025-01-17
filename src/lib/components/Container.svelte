@@ -103,6 +103,7 @@ function draggable(el) {
 		else if (el.offsetTop < 0)
 			el.style.top = '0'
 		if (height != 'auto') el.style.height = el.clientHeight + 'px'
+
 		document.onmouseup = null
 		document.onmousemove = null
 	}
@@ -147,6 +148,7 @@ function draggable(el) {
 	color: #c6c6c6;
 	text-align: center;
 	cursor: move;
+	user-select: none;
 }
 
 .close-btn {

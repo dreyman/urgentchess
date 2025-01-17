@@ -11,7 +11,7 @@ declare global {
 		// interface Platform {}
 	}
 
-	interface Move {
+	type Move = {
 		from: number
 		to: number
 		capture?: boolean,
@@ -20,8 +20,9 @@ declare global {
 
 	type Color = -1 | 1
 	type Side = Color | 0
+	type Piece = -6 | -5 | -4 | -3 | -2 | -1 | 1 | 2 | 3 | 4 | 5 | 6
 
-	interface GameResult {
+	type GameResult = {
 		winner: Color | 0,
 		details: string
 		resign: Color,
@@ -29,7 +30,7 @@ declare global {
 		checkmate: boolean,
 	}
 
-	interface GameContext {
+	type GameContext = {
 		moves: Move[],
 		woo: boolean,
 		wooo: boolean,
@@ -41,7 +42,7 @@ declare global {
 		black_in_check: boolean,
 	}
 
-	interface ContainerProps {
+	type ContainerProps = {
 		title: string,
 		minwidth?: number,
 		minheight?: number,

@@ -146,11 +146,13 @@ async function use_piece_set(name) {
 
 .piece-set-btn {
 	background: #3c3c3c;
+	box-shadow: #272727 0px 0px 6px 2px inset;
 }
 
 .piece-set-btn.active {
 	background: #4f4f4f;
 	color: #a8c7fa;
 	font-weight: bold;
+	box-shadow: none;
 }
 </style>

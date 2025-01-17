@@ -7,6 +7,7 @@ TODO:
 - add settings per board (cog icon in the title)
 - add mute board button in the title
 - 2 more orientations
+- show shadow of the piece being dragged
 */
 import * as util from '$lib/chess/util.js'
 import { Piece, Color } from '$lib/chess/chess.js'
@@ -20,10 +21,10 @@ import move_sound from '$lib/audio/move.mp3'
  * side: Side
  * orientation: -1 | 1
  * last_move: Move
- * context?: GameContext | {}
+ * context?: GameContext
  * legal_moves: Move[]
  }} */
-let { board, onmove, side = 0, orientation: ori, last_move, context = {}, legal_moves } = $props()
+let { board, onmove, side = 0, orientation: ori, last_move, context, legal_moves } = $props()
 let selected_piece = $state(-1)
 let config = appconfig.board // FIXME instead of importing config, should get it from the props
 /** @type {SVGUseElement} */
@@ -60,7 +61,7 @@ function on_square_click(sq) {
 /** @param {SVGSVGElement} el */
 function board_dnd(el) {
 	let board_svg = el
-	/** @type {HTMLElement | null} */
+	/** @type {SVGUseElement | null} */
 	let drag_piece = null
 	el.addEventListener('mousedown', on_drag_start)
 	el.addEventListener('mousemove', on_drag)
@@ -69,14 +70,13 @@ function board_dnd(el) {
 	el.addEventListener('touchstart', on_drag_start)
 	el.addEventListener('touchmove', on_drag)
 	el.addEventListener('touchend', on_drag_end)
-	// el.addEventListener('touchleave', on_drag_end)
 	el.addEventListener('touchcancel', on_drag_end)
 
 	/** @param {MouseEvent | TouchEvent} e */
 	function on_drag_start(e) {
 		/** @type {EventTarget | null} */
 		let target = e.target
-		if (target && (target instanceof HTMLElement) && target.dataset.draggable == 'true') {
+		if (target && (target instanceof SVGUseElement) && target.dataset.draggable == 'true') {
 			e.preventDefault()
 			if (!target.dataset.square) return
 			let square = +target.dataset.square
@@ -203,6 +203,7 @@ function get_symbol_for_piece(piece) {
 			{#if config.highlight_king_in_check && ((context.white_in_check && piece == Piece.white_king) || (context.black_in_check && piece == Piece.black_king))}
 				<circle cx={x + 0.5} cy={y + 0.5} r="0.5" fill="url('#king_in_check_gradient')" />
 			{/if}
+
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<use

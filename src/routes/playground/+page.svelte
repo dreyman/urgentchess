@@ -1,14 +1,23 @@
 <script>
 import { Game as ChessGame, Clock } from '$lib/app/model.svelte.js'
 import Game from '$lib/components/Game.svelte'
+import * as util from '$lib/chess/util.js'
+import { appconfig } from '$lib/app/appconfig.svelte.js'
 import Container from '$lib/components/Container.svelte'
-// import CanvasBoard from '$lib/components/CanvasBoard.svelte'
+import CanvasBoard from '$lib/components/CanvasBoard.svelte'
 
 let time = 12 * 60_000
 let game = new ChessGame(new Clock(time, time, time, 2_000))
 let title = $derived(game.result_message ? game.result_message : 'Game')
 /** @type {Side} */
 let side = $state(0)
+
+// setTimeout(() => {
+// 	let moved = game.move({from: util.Square.e2, to: util.Square.e4})
+// }, 2500)
+// setTimeout(() => {
+// 	let moved = game.move({from: util.Square.e7, to: util.Square.e5})
+// }, 3500)
 
 $effect(() => {
 	side = !game.last_move || game.board[game.last_move.to] < 0 ? 1 : -1
@@ -17,12 +26,11 @@ $effect(() => {
 function onmove() {}
 </script>
 
-<Container
+<!-- <Container
 	{title}
 	resize="horizontal"
 	minwidth={250}
 	width={500}
-	height="auto"
 	left="center"
 	top="center"
 >
@@ -32,20 +40,18 @@ function onmove() {}
 			<h1 class="board-message">{game.result_message}</h1>
 		</div>
 	{/if}
-</Container>
+</Container> -->
 
-<!-- <Container
+<Container
 	{title}
-	resize="horizontal"
 	minwidth={250}
-	width={500}
-	height="auto"
+	width={600}
 	left="center"
 	top="center"
 >
-	<CanvasBoard />
+	<CanvasBoard board={game.board} onmove={move => game.try_move(move)} config={appconfig.board} />
 </Container>
- -->
+
 <style>
 .board-overlay {
 	position: absolute;

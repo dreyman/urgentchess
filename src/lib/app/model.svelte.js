@@ -60,6 +60,18 @@ export class Game {
 		return true
 	}
 
+	/**
+	 * @param {Move} move
+	 * @returns {boolean}
+	 */
+	try_move(move) {
+		if (this.is_legal_move(move)) {
+			this.apply_legal_move(move)
+			return true
+		}
+		return false
+	}
+
 	/** @param {Move} move */
 	apply_legal_move(move) {
 		util.apply_move(move, this.board, this.context)
@@ -182,6 +194,7 @@ export class Time {
 	 * @param {number} increment in milliseconds
 	 */
 	constructor(val, increment, active = false) {
+		// FIXME if active is true, then also need to set running_since here
 		this.#t = val
 		this.increment = increment
 		this.active = active
