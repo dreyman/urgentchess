@@ -14,11 +14,26 @@ let title = $derived(game.result_message ? game.result_message : 'Game')
 let side = $state(0)
 let board_rendering = 'canvas'
 
+game.try_move({from: 12, to: 28})
+game.try_move({from: 51, to: 35})
+game.try_move({from: 28, to: 35})
+game.try_move({from: 50, to: 42})
+game.try_move({from: 35, to: 42})
+game.try_move({from: 55, to: 39})
+game.try_move({from: 42, to: 49})
+game.try_move({from: 39, to: 31})
+game.try_move({from: 8, to: 24})
+game.try_move({from: 31, to: 23})
+game.try_move({from: 24, to: 32})
+game.try_move({from: 23, to: 14})
+
+
 $effect(() => {
 	side = !game.last_move || game.board[game.last_move.to] < 0 ? 1 : -1
 })
 
-function onmove() {}
+/** @param {Move} move */
+function onmove(move) {}
 </script>
 
 <Container

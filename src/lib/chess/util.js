@@ -2,6 +2,8 @@ import { Piece as P, Color } from './chess.js'
 /** @import {GameContext} from './chess.js'; */
 /** @import {Move} from './chess.js'; */
 
+export const pawn_promotion_pieces = [P.queen, P.knight, P.rook, P.bishop]
+
 /**
  * @returns {number[]}
  */
@@ -153,6 +155,7 @@ export function color(piece) {
 }
 
 /**
+ * if the given square is dark returns 1, otherwise returns 0
  * @param {number} square [0, 63]
  * @returns {number}
  */
@@ -168,7 +171,7 @@ export function is_dark(square) {
 	// 10101010 01010101 10101010 01010101 10101010 01010101 10101010 01010101
 	// return s % 2 == Math.floor(s / 8) % 2
 	// return (s + Math.floor(s / 8)) % 2 == 0
-	return Boolean(dark(square))
+	return dark(square) == 1
 }
 
 /**

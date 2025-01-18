@@ -30,6 +30,7 @@ let selected_piece = $state(-1)
 /** @type {SVGUseElement} */
 let drag_el
 let dragging = $state(false)
+// FIXME get rid of this
 let last_move = $derived(
 	context && context.moves && context.moves.length > 0
 		? context.moves[context.moves.length - 1]

@@ -11,7 +11,8 @@ import Time from '$lib/components/Time.svelte'
  * render?: string
 }}*/
 let { game, side = 0, onmove = () => {}, render = 'svg' } = $props()
-let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
+// let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
+let orientation = 1
 // let orientation = $state(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
 
 /** @param {Move} move */

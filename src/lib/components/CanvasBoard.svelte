@@ -8,7 +8,7 @@ TODO:
 import { onMount } from 'svelte'
 import { Piece, Color } from '$lib/chess/chess.js'
 import * as util from '$lib/chess/util.js'
-import { appconfig, hightlighted_square_color } from '$lib/app/appconfig.svelte.js'
+import { hightlighted_square_color } from '$lib/app/appconfig.svelte.js'
 
 /** @type {{
  * board: number[]
@@ -20,11 +20,6 @@ import { appconfig, hightlighted_square_color } from '$lib/app/appconfig.svelte.
  * config: any
  }} */
 let { board, onmove, side = 0, orientation: ori, context, legal_moves, config } = $props()
-let last_move = $derived(
-	context && context.moves && context.moves.length > 0
-		? context.moves[context.moves.length - 1]
-		: null
-)
 /** @type {HTMLCanvasElement} */
 let board_canvas
 /** @type {HTMLCanvasElement} */
@@ -43,6 +38,8 @@ let dragging = null
 let images = new Map()
 // let color_to_move = $derived(context.moves.length % 2 == 1 ? Color.black : Color.white )
 
+/** @type {any | null} */
+let pawn_promotion = null
 let selected_piece = {
 	/** @type {number | null} */
 	_sq: null,
@@ -80,19 +77,24 @@ $effect(() => {
 })
 
 $effect(() => {
-	if (mounted && last_move) {
-		let [file, rank] = get_file_and_rank(last_move.from)
-		draw_square(
-			file,
-			rank,
-			hightlighted_square_color(square_color(last_move.from), config.colors.last_move)
-		)
-		;[file, rank] = get_file_and_rank(last_move.to)
-		draw_square(
-			file,
-			rank,
-			hightlighted_square_color(square_color(last_move.to), config.colors.last_move)
-		)
+	if (mounted && context && context.moves && context.moves.length) {
+		let last_move = context.moves[context.moves.length - 1]
+		if (config.highlight_last_move) {
+			let [file, rank] = get_file_and_rank(last_move.from)
+			draw_square(
+				file,
+				rank,
+				hightlighted_square_color(square_color(last_move.from), config.colors.last_move)
+			)
+			;[file, rank] = get_file_and_rank(last_move.to)
+			draw_square(
+				file,
+				rank,
+				hightlighted_square_color(square_color(last_move.to), config.colors.last_move)
+			)
+		} else {
+			// FIXME clear highlighted squares when highlight_last_move is unchecked
+		}
 	}
 })
 
@@ -123,6 +125,7 @@ onMount(async () => {
 
 /** @param {MouseEvent} e */
 function onmousedown({ offsetX: x, offsetY: y }) {
+	if (pawn_promotion) return
 	let [file, rank] = get_file_and_rank_for_xy(x, y)
 	let square = rank * 8 + file
 	let piece = board[square]
@@ -136,7 +139,7 @@ function onmousedown({ offsetX: x, offsetY: y }) {
 			image: images.get(piece),
 		}
 		selected_piece.square = null
-		pctx.clearRect(Math.floor(x / SQ) * SQ, Math.floor(y / SQ) * SQ, SQ, SQ)
+		pctx.clearRect(Math.trunc(x / SQ) * SQ, Math.trunc(y / SQ) * SQ, SQ, SQ)
 		dnd_ctx.drawImage(dragging.image, x - SQ / 2, y - SQ / 2, SQ, SQ)
 	}
 }
@@ -150,42 +153,99 @@ function onmousemove({ offsetX: x, offsetY: y }) {
 
 /** @param {MouseEvent} e */
 function onmouseup({ offsetX: x, offsetY: y }) {
+	if (pawn_promotion) {
+		let [file, rank] = get_file_and_rank_for_xy(x, y)
+		let square = rank * 8 + file
+		let diff = Math.abs(square - pawn_promotion.move.to)
+		if (diff <= 24 && diff % 8 == 0) {
+			promote_pawn_to(util.color(board[pawn_promotion.move.from]) * util.pawn_promotion_pieces[diff / 8])
+		}
+		return
+	}
 	let [file, rank] = get_file_and_rank_for_xy(x, y)
 	let square = rank * 8 + file
 	if (!dragging) {
 		if (selected_piece.square && board[square] / board[selected_piece.square] <= 0) {
 			let move = { from: selected_piece.square, to: square }
-			let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
-			if (!is_legal_move) return
-			let moved = onmove(move)
-			if (moved) {
-				// FIXME shouldn't redraw the whole board after move applied
-				// FIXME also the board is redrawn in effect
-				draw_board()
-				selected_piece.square = null
-			}
+			// let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
+			apply_move(move)
+			// if (!is_legal_move) return
+			// let moved = onmove(move)
+			// if (moved) {
+			// 	// FIXME shouldn't redraw the whole board after move applied
+			// 	// FIXME also the board is redrawn in effect
+			// 	draw_board()
+			// 	selected_piece.square = null
+			// }
 		}
 		return
-	}
-
-	if (square == dragging.square) {
+	} else if (square == dragging.square) {
 		draw_piece(pctx, dragging.square, dragging.image)
 		dragging = null
 		dnd_ctx.clearRect(0, 0, dnd_canvas.width, dnd_canvas.height)
 		selected_piece.square = square
 		return
-	}
+	} else {
+		let move = { from: dragging.square, to: square }
+		apply_move(move)
+		// let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
+		// if (is_legal_move) {
+		// 	let moved = onmove({ from: dragging.square, to: square })
+		// 	if (moved) draw_board() // FIXME shouldn't redraw the whole board after move applied
+		// }
+		if (!pawn_promotion) draw_piece(pctx, dragging.square, dragging.image)
 
-	let move = { from: dragging.square, to: square }
+		dragging = null
+		dnd_ctx.clearRect(0, 0, dnd_canvas.width, dnd_canvas.height)
+	}
+}
+
+/**
+ * @param {Move} move
+ * @param {number} [promotion_piece]
+ */
+function apply_move(move, promotion_piece) {
 	let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
-	if (is_legal_move) {
-		let moved = onmove({ from: dragging.square, to: square })
-		if (moved) draw_board() // FIXME shouldn't redraw the whole board after move applied
+	if (!is_legal_move) return
+	if (!promotion_piece && util.is_pawn_promotion(move, board)) {
+		pawn_promotion = { move }
+		let [file, rank] = get_file_and_rank(move.from)
+		pctx.clearRect(file * SQ, rank * SQ, SQ, SQ)
+		draw_promotion_select(move.to)
+		// pawn_promotion_select.square = move.to
+		// FIXME
+		// pawn_promotion_select = {
+		// 	visible: true,
+		// 	move,
+		// }
+		return
 	}
-	draw_piece(pctx, dragging.square, dragging.image)
+	// pawn_promotion_select.visible = false
+	if (promotion_piece) move.promotion_piece = promotion_piece
+	let moved = onmove(move)
+	pawn_promotion = null
+	// if (moved) selected_piece.square = null
+}
 
-	dragging = null
-	dnd_ctx.clearRect(0, 0, dnd_canvas.width, dnd_canvas.height)
+/** @param {number} square */
+function draw_promotion_select(square) {
+	console.assert((0 <= square && square <= 7) || (56 <= square && square <= 63))
+	let color = square < 8 ? Color.black : Color.white
+	let inc = color == Color.black ? 8 : -8
+	util.pawn_promotion_pieces.forEach((piece, idx) =>
+		draw_piece(
+			pctx,
+			square + idx * inc,
+			images.get(color * piece),
+			config.colors.promotion_piece_bg
+		)
+	)
+}
+
+/** @param {number} piece */
+function promote_pawn_to(piece) {
+	console.assert(!!pawn_promotion)
+	apply_move(pawn_promotion.move, piece)
 }
 
 /**
@@ -231,15 +291,16 @@ function draw_board() {
  * @param {CanvasRenderingContext2D} ctx
  * @param {number} square
  * @param {CanvasImageSource} img
+ * @param {string} [background]
  */
-function draw_piece(ctx, square, img) {
+function draw_piece(ctx, square, img, background) {
 	let [file, rank] = get_file_and_rank(square)
+	if (background) {
+		ctx.fillStyle = background
+		ctx.fillRect(file * SQ, rank * SQ, SQ, SQ)
+	}
 	ctx.drawImage(img, file * SQ, rank * SQ, SQ, SQ)
 }
-
-// function draw_pawn_promotion(file, rank, color) {
-// 	draw_piece(color * Piece.queen)
-// }
 
 /**
  * @param {number} square

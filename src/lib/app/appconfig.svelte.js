@@ -23,7 +23,7 @@ export const board_themes = [
 
 export const piece_sets = ['default', 'anarcandy', 'horsey']
 
-const default_theme = board_themes[1]
+const default_theme = board_themes[0]
 const default_piece_set = piece_sets[0]
 
 const default_config = {
@@ -52,7 +52,7 @@ const default_config = {
 		random_move: false,
 		// TODO impl dynamic interval: max interval when there's a lot of time
 		// and min interval when less than ~20sec
-		time_update_interval: 950,
+		time_update_interval: 250,
 	}
 }
 
