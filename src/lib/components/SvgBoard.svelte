@@ -11,7 +11,7 @@ TODO:
 */
 import * as util from '$lib/chess/util.js'
 import { Piece, Color } from '$lib/chess/chess.js'
-import { appconfig } from '$lib/app/appconfig.svelte.js'
+import { appconfig, hightlighted_square_color } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
 import move_sound from '$lib/audio/move.mp3'
 
@@ -20,18 +20,21 @@ import move_sound from '$lib/audio/move.mp3'
  * onmove: function(Move):boolean
  * side: Side
  * orientation: -1 | 1
- * last_move: Move
  * context?: GameContext
  * legal_moves: Move[]
+ * config: any
  }} */
-let { board, onmove, side = 0, orientation: ori, last_move, context, legal_moves } = $props()
+let { board, onmove, side = 0, orientation: ori, context, legal_moves, config } = $props()
+if (!context) context = util.empty_context()
 let selected_piece = $state(-1)
-let config = appconfig.board // FIXME instead of importing config, should get it from the props
 /** @type {SVGUseElement} */
 let drag_el
 let dragging = $state(false)
-// FIXME get rid of last_move prop, get last move from context.moves instead
-// let last_move = $derived(context && cotext.moves && contxet.moves.length > 0 ? context.moves[context.moves.length - 1] : null)
+let last_move = $derived(
+	context && context.moves && context.moves.length > 0
+		? context.moves[context.moves.length - 1]
+		: null
+)
 /** @type {{visible: boolean, move: Move}} */
 let pawn_promotion_select = $state({ visible: false, move: { from: 0, to: 1 } })
 // let move_audio = new Audio(move_sound)
@@ -76,7 +79,7 @@ function board_dnd(el) {
 	function on_drag_start(e) {
 		/** @type {EventTarget | null} */
 		let target = e.target
-		if (target && (target instanceof SVGUseElement) && target.dataset.draggable == 'true') {
+		if (target && target instanceof SVGUseElement && target.dataset.draggable == 'true') {
 			e.preventDefault()
 			if (!target.dataset.square) return
 			let square = +target.dataset.square
@@ -183,7 +186,7 @@ function get_symbol_for_piece(piece) {
 		{@const y = -ori * Math.floor(sq / 8) + 3.5 * (ori + 1)}
 		{@const file = sq % 8}
 		{@const rank = Math.floor(sq / 8)}
-		{@const square_color = (rank + file) % 2 == 1 ? config.colors.dark : config.colors.light}
+		{@const square_color = util.dark(sq) ? config.colors.dark : config.colors.light}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<rect
@@ -193,9 +196,9 @@ function get_symbol_for_piece(piece) {
 			{x}
 			{y}
 			fill={sq == selected_piece
-				? `color-mix(in srgb, ${square_color} 50%, ${config.colors.selected_piece} 70%`
+				? hightlighted_square_color(square_color, config.colors.selected_piece)
 				: config.highlight_last_move && last_move && (last_move.from == sq || last_move.to == sq)
-					? `color-mix(in srgb, ${square_color} 40%, ${config.colors.last_move} 70%`
+					? hightlighted_square_color(square_color, config.colors.last_move)
 					: square_color}
 		/>
 		{#if piece != 0}

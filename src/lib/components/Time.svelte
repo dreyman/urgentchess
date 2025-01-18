@@ -1,8 +1,13 @@
 <script>
 import { appconfig } from '$lib/app/appconfig.svelte.js'
 
-/** @type {{ time: import('$lib/app/model.svelte.js').Time, ontimeout: function():void }} */
-let { time, ontimeout } = $props()
+/** @type {{
+ * time: import('$lib/app/model.svelte.js').Time
+ * ontimeout: function():void
+ * activebg: string
+ * inactivebg: string
+ }} */
+let { time, ontimeout, activebg = '#394822', inactivebg = '#252320' } = $props()
 let t = $state(time.val)
 let seconds = $derived.by(() => {
 	let seconds = Math.floor((t / 1_000) % 60)
@@ -30,18 +35,26 @@ $effect(() => {
 })
 </script>
 
-<div class="time px-2" class:active={time.active}>
+<div
+	class="time"
+	class:active={time.active}
+	style:background-color={time.active ? activebg : inactivebg}
+	style:color={time.active ? inactivebg : activebg}
+>
 	{minutes}:{seconds}
 </div>
 
 <style>
 .time {
-	color: #fff;
+	/*	color: #fff;*/
 	font-size: 1.5rem;
 	background: #252320;
+	padding: 0rem 0.5rem;
+	line-height: normal;
 }
 
 .active {
-	background: #394822;
+	font-weight: bold;
+	/*	background: #394822;*/
 }
 </style>

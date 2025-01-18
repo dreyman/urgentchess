@@ -153,6 +153,25 @@ export function color(piece) {
 }
 
 /**
+ * @param {number} square [0, 63]
+ * @returns {number}
+ */
+export function dark(square) {
+	return (0b1010101001010101 >> (square & 15)) & 0b1
+}
+
+/**
+ * @param {number} square [0, 63]
+ * @returns {boolean}
+ */
+export function is_dark(square) {
+	// 10101010 01010101 10101010 01010101 10101010 01010101 10101010 01010101
+	// return s % 2 == Math.floor(s / 8) % 2
+	// return (s + Math.floor(s / 8)) % 2 == 0
+	return Boolean(dark(square))
+}
+
+/**
  * @param {Move} m move
  * @param {number[]} b board
  * @returns {boolean}
@@ -182,6 +201,26 @@ export function get_enpassant_capture_sq(m, b) {
 	) {
 		return diff == 9 ? m.from + 1 : m.from - 1
 	} else return -1
+}
+
+/** @param {number} piece */
+export function get_piece_letter(piece) {
+	switch (Math.abs(piece)) {
+		case P.king:
+			return 'K'
+		case P.queen:
+			return 'Q'
+		case P.rook:
+			return 'R'
+		case P.bishop:
+			return 'B'
+		case P.knight:
+			return 'N'
+		case P.pawn:
+			return 'P'
+		default:
+			throw new Error('Unknown piece: ' + piece)
+	}
 }
 
 /**

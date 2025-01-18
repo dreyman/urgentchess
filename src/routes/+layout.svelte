@@ -7,6 +7,8 @@ import { appconfig } from '$lib/app/appconfig.svelte.js'
 let { data, children } = $props()
 let settings_visible = $state(false)
 appconfig.board.piece_set_svg_content = data.piece_set_content
+// FIXME mb it's better to set appconfig in context here,
+// and get config from context in all components instead of importing it
 
 function toggle_settings() {
 	settings_visible = !settings_visible
