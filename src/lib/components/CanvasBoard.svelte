@@ -1,7 +1,6 @@
 <!--
 TODO:
 - Resizing canvas/container is broken since SQ is fixed
-- pawn promotion
 - handle all the other appconfig values
  -->
 <script>
@@ -167,16 +166,7 @@ function onmouseup({ offsetX: x, offsetY: y }) {
 	if (!dragging) {
 		if (selected_piece.square && board[square] / board[selected_piece.square] <= 0) {
 			let move = { from: selected_piece.square, to: square }
-			// let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
 			apply_move(move)
-			// if (!is_legal_move) return
-			// let moved = onmove(move)
-			// if (moved) {
-			// 	// FIXME shouldn't redraw the whole board after move applied
-			// 	// FIXME also the board is redrawn in effect
-			// 	draw_board()
-			// 	selected_piece.square = null
-			// }
 		}
 		return
 	} else if (square == dragging.square) {
@@ -188,11 +178,6 @@ function onmouseup({ offsetX: x, offsetY: y }) {
 	} else {
 		let move = { from: dragging.square, to: square }
 		apply_move(move)
-		// let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
-		// if (is_legal_move) {
-		// 	let moved = onmove({ from: dragging.square, to: square })
-		// 	if (moved) draw_board() // FIXME shouldn't redraw the whole board after move applied
-		// }
 		if (!pawn_promotion) draw_piece(pctx, dragging.square, dragging.image)
 
 		dragging = null
@@ -212,12 +197,6 @@ function apply_move(move, promotion_piece) {
 		let [file, rank] = get_file_and_rank(move.from)
 		pctx.clearRect(file * SQ, rank * SQ, SQ, SQ)
 		draw_promotion_select(move.to)
-		// pawn_promotion_select.square = move.to
-		// FIXME
-		// pawn_promotion_select = {
-		// 	visible: true,
-		// 	move,
-		// }
 		return
 	}
 	// pawn_promotion_select.visible = false
@@ -237,7 +216,7 @@ function draw_promotion_select(square) {
 			pctx,
 			square + idx * inc,
 			images.get(color * piece),
-			config.colors.promotion_piece_bg
+			config.colors.promotion_piece_bg,
 		)
 	)
 }

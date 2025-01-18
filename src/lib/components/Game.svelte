@@ -38,12 +38,14 @@ function on_black_timeout() {
 
 <div class="flex flex-col items-end" class:flex-col-reverse={orientation == 1}>
 	{#key game}
+		{#if game.clock}
 		<Time
 			time={game.clock.time1}
 			ontimeout={on_white_timeout}
 			activebg={appconfig.board.colors.light}
 			inactivebg={appconfig.board.colors.dark}
 		/>
+		{/if}
 		<div class="w-full">
 			{#if render == 'canvas'}
 				<CanvasBoard
@@ -67,12 +69,14 @@ function on_black_timeout() {
 				></SvgBoard>
 			{/if}
 		</div>
+		{#if game.clock}
 		<Time
 			time={game.clock.time2}
 			ontimeout={on_black_timeout}
 			activebg={appconfig.board.colors.light}
 			inactivebg={appconfig.board.colors.dark}
 		/>
+		{/if}
 	{/key}
 </div>
 

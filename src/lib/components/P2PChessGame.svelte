@@ -49,12 +49,12 @@ function onmove(move) {
 /** @param {any} data */
 function on_data(data) {
 	if (data.move && game.result === null) {
-		game.move(data.move)
+		game.apply_legal_move(data.move)
 		if (appconfig.game.random_move) {
 			let random_move = game.get_random_legal_move()
 			if (random_move) {
 				send_data({ move: random_move })
-				game.move(random_move)
+				game.apply_legal_move(random_move)
 			}
 		}
 	} else if (data.message) {

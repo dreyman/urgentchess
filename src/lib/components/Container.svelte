@@ -137,6 +137,7 @@ function draggable(el) {
 <style>
 .draggable-container {
 	position: absolute;
+	z-index: 100;
 	background: #272727;
 	overflow: auto;
 	border-radius: 8px 8px 0 0;

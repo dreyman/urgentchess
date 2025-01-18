@@ -40,7 +40,7 @@ export class Game {
 	)
 
 	/**
-	 * @param {Clock} clock
+	 * @param {Clock | null} clock
 	 * @param {number[]} board
 	 * @param {Move[]} moves
 	 */
@@ -49,15 +49,6 @@ export class Game {
 		this.board = board
 		this.context = chess.create_context(this.board, moves)
 		this.valid_moves = chess.get_moves(this.board, this.context)
-	}
-
-	/** @param {Move} move */
-	move(move) {
-		if (this.clock.time1.val <= 0 || this.clock.time2.val <= 0 || !this.is_legal_move(move)) {
-			return false
-		}
-		this.apply_legal_move(move)
-		return true
 	}
 
 	/**
@@ -76,13 +67,15 @@ export class Game {
 	apply_legal_move(move) {
 		util.apply_move(move, this.board, this.context)
 
-		if (this.moves.length == 2) this.clock.start()
-		else if (this.moves.length > 2) this.clock.toggle()
+		if (this.clock) {
+			if (this.moves.length == 2) this.clock.start()
+			else if (this.moves.length > 2) this.clock.toggle()
+		}
 
 		this.valid_moves = chess.get_moves(this.board, this.context)
 
 		if (this.valid_moves.length == 0) {
-			this.clock.stop()
+			if (this.clock) this.clock.stop()
 			if (this.context.white_in_check) this.checkmate_white = true
 			else if (this.context.black_in_check) this.checkmate_black = true
 			else this.stalemate = true
@@ -118,17 +111,17 @@ export class Game {
 	}
 
 	end_with_draw() {
-		this.clock.stop()
+		if (this.clock) this.clock.stop()
 		this.draw = true
 	}
 
 	resign_white() {
-		this.clock.stop()
+		if (this.clock) this.clock.stop()
 		this.white_resigned = true
 	}
 
 	resign_black() {
-		this.clock.stop()
+		if (this.clock) this.clock.stop()
 		this.black_resigned = true
 	}
 

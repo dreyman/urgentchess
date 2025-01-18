@@ -44,7 +44,7 @@ function make_random_move(game) {
 	}
 	let idx = Math.floor(Math.random() * game.valid_moves.length)
 	let random_move = game.valid_moves[idx]
-	game.move(random_move)
+	game.apply_legal_move(random_move)
 }
 
 function new_game() {

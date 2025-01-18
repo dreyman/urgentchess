@@ -78,6 +78,21 @@ async function use_piece_set(name) {
 				</button>
 			{/each}
 		</div>
+		<div class="flex items-center">
+			<span class="mr-2">Board rendering:</span>
+			<button onclick={() => appconfig.board.render = 'svg'}
+				class="piece-set-btn py-1 px-2"
+				class:active={appconfig.board.render == 'svg'}
+			>
+				svg
+			</button>
+			<button onclick={() => appconfig.board.render = 'canvas'}
+				class="piece-set-btn py-1 px-2"
+				class:active={appconfig.board.render == 'canvas'}
+			>
+				canvas
+			</button>
+		</div>
 		<label>
 			<input type="checkbox" bind:checked={appconfig.board.sounds} />
 			Board sounds
