@@ -2,6 +2,7 @@
 TODO:
 - Resizing canvas/container is broken since SQ is fixed
 - handle all the other appconfig values
+- handle touch events
  -->
 <script>
 import { onMount } from 'svelte'
@@ -51,7 +52,11 @@ let selected_piece = {
 		this._sq = s
 		if (s) {
 			;[this._file, this._rank] = get_file_and_rank(s)
-			draw_square(this._file, this._rank, config.colors.selected_piece + '80')
+			draw_square(
+				this._file,
+				this._rank,
+				hightlighted_square_color(square_color(s), config.colors.selected_piece)
+			)
 		}
 	},
 	/** @returns {number | null} */
@@ -157,7 +162,9 @@ function onmouseup({ offsetX: x, offsetY: y }) {
 		let square = rank * 8 + file
 		let diff = Math.abs(square - pawn_promotion.move.to)
 		if (diff <= 24 && diff % 8 == 0) {
-			promote_pawn_to(util.color(board[pawn_promotion.move.from]) * util.pawn_promotion_pieces[diff / 8])
+			promote_pawn_to(
+				util.color(board[pawn_promotion.move.from]) * util.pawn_promotion_pieces[diff / 8]
+			)
 		}
 		return
 	}
@@ -216,7 +223,7 @@ function draw_promotion_select(square) {
 			pctx,
 			square + idx * inc,
 			images.get(color * piece),
-			config.colors.promotion_piece_bg,
+			config.colors.promotion_piece_bg
 		)
 	)
 }

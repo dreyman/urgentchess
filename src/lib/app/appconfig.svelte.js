@@ -47,6 +47,7 @@ const default_config = {
 		animations: false, // TODO impl for true
 		piece_shadow_opacity: 0.4,
 		piece_size: 0,
+		render: 'svg',
 	},
 	game: {
 		random_move: false,

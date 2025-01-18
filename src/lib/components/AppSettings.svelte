@@ -90,7 +90,7 @@ async function use_piece_set(name) {
 				class="piece-set-btn py-1 px-2"
 				class:active={appconfig.board.render == 'canvas'}
 			>
-				canvas
+				canvas (WIP)
 			</button>
 		</div>
 		<label>

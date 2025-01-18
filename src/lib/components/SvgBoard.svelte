@@ -30,7 +30,6 @@ let selected_piece = $state(-1)
 /** @type {SVGUseElement} */
 let drag_el
 let dragging = $state(false)
-// FIXME get rid of this
 let last_move = $derived(
 	context && context.moves && context.moves.length > 0
 		? context.moves[context.moves.length - 1]
@@ -48,6 +47,7 @@ let pawn_promotion_select = $state({ visible: false, move: { from: 0, to: 1 } })
 // 	}
 // })
 
+// FIXME this effect causes move sound when switching to svg board rendering and mb in other cases as well
 $effect(() => {
 	if (last_move && config.sounds) {
 		if (last_move.capture) new Audio(capture_sound).play()
@@ -228,62 +228,25 @@ function get_symbol_for_piece(piece) {
 	{#if pawn_promotion_select.visible}
 		{@const color = pawn_promotion_select.move.to < 8 ? Color.black : Color.white}
 		{@const x = (pawn_promotion_select.move.to % 8) * ori - 3.5 * (ori - 1)}
-		{@const queen_y = -ori * Math.floor(pawn_promotion_select.move.to / 8) + 3.5 * (ori + 1)}
-		{@const knight_y = queen_y + color * ori}
-		{@const rook_y = queen_y + 2 * color * ori}
-		{@const bishop_y = queen_y + 3 * color * ori}
+		{@const first_prom_piece_y = -ori * Math.floor(pawn_promotion_select.move.to / 8) + 3.5 * (ori + 1)}
 
-		<rect {x} y={queen_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<use
-			href={get_symbol_for_piece(color * Piece.queen)}
-			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.queen)}
-			x={x - 0.01 * config.piece_size}
-			y={queen_y - 0.01 * config.piece_size}
-			width={1 + 0.02 * config.piece_size}
-			height={1 + 0.02 * config.piece_size}
-			class="animate-pulse-1"
-		/>
+		{#each util.pawn_promotion_pieces as prom_piece, idx}
+			{@const prom_piece_y = first_prom_piece_y + idx * color * ori}
+			<rect {x} y={prom_piece_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<use
+				href={get_symbol_for_piece(color * prom_piece)}
+				onclick={() => apply_move(pawn_promotion_select.move, color * prom_piece)}
+				x={x - 0.01 * config.piece_size}
+				y={prom_piece_y}
+				width={1 + 0.02 * config.piece_size}
+				height={1 + 0.02 * config.piece_size}
+				class="animate-pulse-1"
+			/>
+		{/each}
 
-		<rect {x} y={knight_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<use
-			href={get_symbol_for_piece(color * Piece.knight)}
-			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.knight)}
-			x={x - 0.01 * config.piece_size}
-			y={knight_y - 0.01 * config.piece_size}
-			width={1 + 0.02 * config.piece_size}
-			height={1 + 0.02 * config.piece_size}
-			class="animate-pulse-1"
-		/>
 
-		<rect {x} y={rook_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<use
-			href={get_symbol_for_piece(color * Piece.rook)}
-			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.rook)}
-			x={x - 0.01 * config.piece_size}
-			y={rook_y - 0.01 * config.piece_size}
-			width={1 + 0.02 * config.piece_size}
-			height={1 + 0.02 * config.piece_size}
-			class="animate-pulse-1"
-		/>
-
-		<rect {x} y={bishop_y} width="1" height="1" fill={config.colors.promotion_piece_bg} />
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<use
-			href={get_symbol_for_piece(color * Piece.bishop)}
-			onclick={() => apply_move(pawn_promotion_select.move, color * Piece.bishop)}
-			x={x - 0.01 * config.piece_size}
-			y={bishop_y - 0.01 * config.piece_size}
-			width={1 + 0.02 * config.piece_size}
-			height={1 + 0.02 * config.piece_size}
-			class="animate-pulse-1"
-		/>
 	{/if}
 </svg>
 
