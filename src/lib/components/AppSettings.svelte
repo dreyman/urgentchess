@@ -7,7 +7,7 @@ let board_colors = appconfig.board.colors
 /** @param {string} name */
 async function use_piece_set(name) {
 	// TODO mb should cache loaded svg content
-	let resp = await fetch('/piece_sets/' + name)
+	let resp = await fetch('/piece_sets/' + name + '/symbols')
 	let svg = await resp.text()
 	appconfig.board.piece_set_svg_content = svg
 	appconfig.board.piece_set = name

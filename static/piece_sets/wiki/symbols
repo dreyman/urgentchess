@@ -1,4 +1,4 @@
-<symbol id="wking" viewBox="0 0 45 45">
+<symbol id="wK" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		fill="none"
@@ -22,7 +22,7 @@
 		<path d="M12.5 30c5.5-3 14.5-3 20 0m-20 3.5c5.5-3 14.5-3 20 0m-20 3.5c5.5-3 14.5-3 20 0" />
 	</g>
 </symbol>
-<symbol id="bking" viewBox="0 0 45 45">
+<symbol id="bK" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -52,7 +52,7 @@
 	</g>
 </symbol>
 
-<symbol id="wqueen" viewBox="0 0 45 45">
+<symbol id="wQ" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g style="fill:#ffffff;stroke:#000000;stroke-width:1.5;stroke-linejoin:round">
 		<path
@@ -70,7 +70,7 @@
 		<circle cx="39" cy="12" r="2" />
 	</g>
 </symbol>
-<symbol id="bqueen" viewBox="0 0 45 45">
+<symbol id="bQ" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="fill:#000000;stroke:#000000;stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round"
@@ -102,7 +102,7 @@
 	</g>
 </symbol>
 
-<symbol id="wrook" viewBox="0 0 45 45">
+<symbol id="wR" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -124,7 +124,7 @@
 	</g>
 </symbol>
 
-<symbol id="brook" viewBox="0 0 45 45">
+<symbol id="bR" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="opacity:1; fill:#000000; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -168,7 +168,7 @@
 	</g>
 </symbol>
 
-<symbol id="wbishop" viewBox="0 0 45 45">
+<symbol id="wB" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -189,7 +189,7 @@
 		/>
 	</g>
 </symbol>
-<symbol id="bbishop" viewBox="0 0 45 45">
+<symbol id="bB" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="opacity:1; fill:none; fill-rule:evenodd; fill-opacity:1; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -211,7 +211,7 @@
 	</g>
 </symbol>
 
-<symbol id="wknight" viewBox="0 0 45 45">
+<symbol id="wN" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -236,7 +236,7 @@
 		/>
 	</g>
 </symbol>
-<symbol id="bknight" viewBox="0 0 45 45">
+<symbol id="bN" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<g
 		style="opacity:1; fill:none; fill-opacity:1; fill-rule:evenodd; stroke:#000000; stroke-width:1.5; stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
@@ -266,14 +266,14 @@
 	</g>
 </symbol>
 
-<symbol id="wpawn" viewBox="0 0 45 45">
+<symbol id="wP" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<path
 		d="m 22.5,9 c -2.21,0 -4,1.79 -4,4 0,0.89 0.29,1.71 0.78,2.38 C 17.33,16.5 16,18.59 16,21 c 0,2.03 0.94,3.84 2.41,5.03 C 15.41,27.09 11,31.58 11,39.5 H 34 C 34,31.58 29.59,27.09 26.59,26.03 28.06,24.84 29,23.03 29,21 29,18.59 27.67,16.5 25.72,15.38 26.21,14.71 26.5,13.89 26.5,13 c 0,-2.21 -1.79,-4 -4,-4 z"
 		style="opacity:1; fill:#ffffff; fill-opacity:1; fill-rule:nonzero; stroke:#000000; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:miter; stroke-miterlimit:4; stroke-dasharray:none; stroke-opacity:1;"
 	/>
 </symbol>
-<symbol id="bpawn" viewBox="0 0 45 45">
+<symbol id="bP" viewBox="0 0 45 45">
 	<rect width="45" height="45" opacity="0"></rect>
 	<path
 		d="m 22.5,9 c -2.21,0 -4,1.79 -4,4 0,0.89 0.29,1.71 0.78,2.38 C 17.33,16.5 16,18.59 16,21 c 0,2.03 0.94,3.84 2.41,5.03 C 15.41,27.09 11,31.58 11,39.5 H 34 C 34,31.58 29.59,27.09 26.59,26.03 28.06,24.84 29,23.03 29,21 29,18.59 27.67,16.5 25.72,15.38 26.21,14.71 26.5,13.89 26.5,13 c 0,-2.21 -1.79,-4 -4,-4 z"

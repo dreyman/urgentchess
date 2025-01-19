@@ -87,7 +87,7 @@ function board_dnd(el) {
 			selected_piece = selected_piece == square ? -1 : square
 			drag_piece = target
 			drag_piece.setAttributeNS(null, 'opacity', config.piece_shadow_opacity.toString())
-			drag_el.setAttributeNS(null, 'href', get_symbol_for_piece(board[square]))
+			drag_el.setAttributeNS(null, 'href', '#' + util.piece_id(board[square]))
 			drag_el.dataset.square = target.dataset.square
 			let mouse = get_mouse_position(e)
 			drag_el.setAttributeNS(null, 'x', (mouse.x - 0.5).toString())
@@ -155,15 +155,6 @@ function apply_move(move, promotion_piece) {
 function get_square_idx({ x, y }) {
 	return (-ori * Math.floor(y) + (ori + 1) * 3.5) * 8 - 3.5 * (ori - 1) + ori * Math.floor(x)
 }
-
-/** @param {number} piece */
-function get_symbol_for_piece(piece) {
-	let id = '#'
-	if (piece < 0) id += 'b'
-	else if (piece > 0) id += 'w'
-	id += util.piece_name(piece)
-	return id
-}
 </script>
 
 <svg
@@ -185,8 +176,6 @@ function get_symbol_for_piece(piece) {
 	{#each board as piece, sq}
 		{@const x = (sq % 8) * ori - 3.5 * (ori - 1)}
 		{@const y = -ori * Math.floor(sq / 8) + 3.5 * (ori + 1)}
-		{@const file = sq % 8}
-		{@const rank = Math.floor(sq / 8)}
 		{@const square_color = util.dark(sq) ? config.colors.dark : config.colors.light}
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -211,7 +200,7 @@ function get_symbol_for_piece(piece) {
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<use
-				href={get_symbol_for_piece(piece)}
+				href={'#' + util.piece_id(piece)}
 				onclick={() => on_square_click(sq)}
 				x={x - 0.01 * config.piece_size}
 				y={y - 0.01 * config.piece_size}
@@ -236,7 +225,7 @@ function get_symbol_for_piece(piece) {
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<!-- svelte-ignore a11y_click_events_have_key_events -->
 			<use
-				href={get_symbol_for_piece(color * prom_piece)}
+				href={'#' + util.piece_id(color * prom_piece)}
 				onclick={() => apply_move(pawn_promotion_select.move, color * prom_piece)}
 				x={x - 0.01 * config.piece_size}
 				y={prom_piece_y}

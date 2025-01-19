@@ -81,9 +81,9 @@ $effect(() => {
 })
 
 $effect(() => {
-	if (mounted && context && context.moves && context.moves.length) {
-		let last_move = context.moves[context.moves.length - 1]
-		if (config.highlight_last_move) {
+	if (config.highlight_last_move) {
+		if (mounted && context && context.moves && context.moves.length) {
+			let last_move = context.moves[context.moves.length - 1]
 			let [file, rank] = get_file_and_rank(last_move.from)
 			draw_square(
 				file,
@@ -96,9 +96,9 @@ $effect(() => {
 				rank,
 				hightlighted_square_color(square_color(last_move.to), config.colors.last_move)
 			)
-		} else {
-			// FIXME clear highlighted squares when highlight_last_move is unchecked
 		}
+	} else {
+		// unhighlight move when highlight_last_move is unchecked
 	}
 })
 
@@ -172,7 +172,7 @@ function onmouseup({ offsetX: x, offsetY: y }) {
 	let square = rank * 8 + file
 	if (!dragging) {
 		if (selected_piece.square && board[square] / board[selected_piece.square] <= 0) {
-			let move = { from: selected_piece.square, to: square }
+			let move = {from: selected_piece.square, to: square}
 			apply_move(move)
 		}
 		return
@@ -319,7 +319,7 @@ function get_file_and_rank_for_xy(x, y) {
 
 /** @param {number} piece */
 function get_piece_img_src(piece) {
-	let letter = util.get_piece_letter(piece)
+	let letter = util.piece_letter(piece)
 	let color = piece > 0 ? 'w' : 'b'
 	return `/piece_sets/${piece_set}/${color}${letter}.svg`
 }

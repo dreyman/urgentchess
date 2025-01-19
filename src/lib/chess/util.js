@@ -206,6 +206,14 @@ export function get_enpassant_capture_sq(m, b) {
 	} else return -1
 }
 
+/**
+ * @param {number} piece
+ * @returns {string}
+ */
+export function piece_id(piece) {
+	return (color(piece) == Color.white ? 'w' : 'b') + get_piece_letter(piece)
+}
+
 /** @param {number} piece */
 export function get_piece_letter(piece) {
 	switch (Math.abs(piece)) {

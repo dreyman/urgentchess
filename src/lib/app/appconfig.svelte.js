@@ -21,7 +21,7 @@ export const board_themes = [
 	}
 ]
 
-export const piece_sets = ['default', 'anarcandy', 'horsey']
+export const piece_sets = ['wiki', 'merida', 'anarcandy', 'horsey']
 
 const default_theme = board_themes[0]
 const default_piece_set = piece_sets[0]
