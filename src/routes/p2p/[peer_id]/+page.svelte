@@ -52,14 +52,17 @@ onMount(() => {
 
 /** @param {import('peerjs').DataConnection} con */
 function setup_connection(con) {
-	con.on('data', /** @param {any} data */ data => {
-		if (data.game) {
-			game = get_game_from_data(data.game)
-			side = data.side
-		} else {
-			p2p_messages.push(data)
+	con.on(
+		'data',
+		/** @param {any} data */ data => {
+			if (data.game) {
+				game = get_game_from_data(data.game)
+				side = data.side
+			} else {
+				p2p_messages.push(data)
+			}
 		}
-	})
+	)
 	con.on('close', () => (status = 'connection closed'))
 	con.on('error', () => (status = 'connection error'))
 }
@@ -110,7 +113,7 @@ function get_game_data(game) {
 		white_time: game.clock.time1.val,
 		black_time: game.clock.time2.val,
 		increment: game.clock.increment,
-		moves: game.moves
+		moves: game.moves,
 	}
 }
 

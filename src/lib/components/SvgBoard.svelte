@@ -1,20 +1,19 @@
 <script>
 /*
 TODO:
-- impl the ability to select piece on pawn promotion
 - premove
 - animations
 - add settings per board (cog icon in the title)
 - add mute board button in the title
 - 2 more orientations
-- show shadow of the piece being dragged
 */
 import * as util from '$lib/chess/util.js'
 import { Piece, Color } from '$lib/chess/chess.js'
-import { appconfig, hightlighted_square_color } from '$lib/app/appconfig.svelte.js'
+import { hightlighted_square_color } from '$lib/app/appconfig.svelte.js'
 import capture_sound from '$lib/audio/capture.mp3'
 import move_sound from '$lib/audio/move.mp3'
 
+// FIXME mb get rid of side, just use color | null for side
 /** @type {{
  * board: number[]
  * onmove: function(Move):boolean
@@ -29,6 +28,8 @@ if (!context) context = util.empty_context()
 let selected_piece = $state(-1)
 /** @type {SVGUseElement} */
 let drag_el
+/** @type {SVGSVGElement} */
+let board_svg_el
 let dragging = $state(false)
 let last_move = $derived(
 	context && context.moves && context.moves.length > 0
@@ -37,15 +38,6 @@ let last_move = $derived(
 )
 /** @type {{visible: boolean, move: Move}} */
 let pawn_promotion_select = $state({ visible: false, move: { from: 0, to: 1 } })
-// let move_audio = new Audio(move_sound)
-// let capture_audio = new Audio(capture_sound)
-
-// $effect(() => {
-// 	if (!ori) {
-// 		if (side == 0) ori = Math.random() > 0.5 ? 1 : -1
-// 		else ori = side
-// 	}
-// })
 
 // FIXME this effect causes move sound when switching to svg board rendering and mb in other cases as well
 $effect(() => {
@@ -54,6 +46,18 @@ $effect(() => {
 		else new Audio(move_sound).play()
 	}
 })
+
+// $effect.pre(() => {
+// 	// {@const x = (sq % 8) * ori - 3.5 * (ori - 1)}
+// 	// {@const y = -ori * Math.floor(sq / 8) + 3.5 * (ori + 1)}
+// 	console.log('PRE')
+// 	console.log(context.moves.length)
+// 	if (context.moves.length) {
+// 		let last_move = context.moves[context.moves.length - 1]
+// 		let piece_el = board_svg_el.querySelector('use[data-square="0"]')
+
+// 	}
+// })
 
 /** @param {number} sq */
 function on_square_click(sq) {
@@ -67,10 +71,10 @@ function board_dnd(el) {
 	let board_svg = el
 	/** @type {SVGUseElement | null} */
 	let drag_piece = null
-	el.addEventListener('mousedown', on_drag_start)
 	el.addEventListener('mousemove', on_drag)
 	el.addEventListener('mouseup', on_drag_end)
 	el.addEventListener('mouseleave', on_drag_end)
+	el.addEventListener('mousedown', on_drag_start)
 	el.addEventListener('touchstart', on_drag_start)
 	el.addEventListener('touchmove', on_drag)
 	el.addEventListener('touchend', on_drag_end)
@@ -161,6 +165,7 @@ function get_square_idx({ x, y }) {
 	xmlns="http://www.w3.org/2000/svg"
 	xmlns:x="http://www.w3.org/1999/xlink"
 	viewBox="0 0 8 8"
+	bind:this={board_svg_el}
 	use:board_dnd
 >
 	<defs>
@@ -217,7 +222,8 @@ function get_square_idx({ x, y }) {
 	{#if pawn_promotion_select.visible}
 		{@const color = pawn_promotion_select.move.to < 8 ? Color.black : Color.white}
 		{@const x = (pawn_promotion_select.move.to % 8) * ori - 3.5 * (ori - 1)}
-		{@const first_prom_piece_y = -ori * Math.floor(pawn_promotion_select.move.to / 8) + 3.5 * (ori + 1)}
+		{@const first_prom_piece_y =
+			-ori * Math.floor(pawn_promotion_select.move.to / 8) + 3.5 * (ori + 1)}
 
 		{#each util.pawn_promotion_pieces as prom_piece, idx}
 			{@const prom_piece_y = first_prom_piece_y + idx * color * ori}
@@ -234,8 +240,6 @@ function get_square_idx({ x, y }) {
 				class="animate-pulse-1"
 			/>
 		{/each}
-
-
 	{/if}
 </svg>
 

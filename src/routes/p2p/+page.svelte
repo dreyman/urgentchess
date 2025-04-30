@@ -45,10 +45,6 @@ async function copy_link() {
 					{copied ? 'COPIED' : 'COPY'}
 				</button>
 			</h2>
-			<!-- <button onclick={() => dev.peer_id = peer.id}
-				class="copy-btn ml-1 rounded px-2 font-bold" >
-				create fake peer
-			</button> -->
 		</div>
 	{/if}
 </div>

@@ -6,20 +6,30 @@ TODO:
  -->
 <script>
 import { onMount } from 'svelte'
-import { Piece, Color } from '$lib/chess/chess.js'
+import { Color } from '$lib/chess/chess.js'
 import * as util from '$lib/chess/util.js'
 import { hightlighted_square_color } from '$lib/app/appconfig.svelte.js'
 
 /** @type {{
  * board: number[]
  * onmove: function(Move):boolean
- * side: Side
- * orientation: -1 | 1
+ * side?: Side
+ * orientation: Color
  * context?: GameContext
  * legal_moves: Move[]
  * config: any
+ * highlighted_squares?: number[]
  }} */
-let { board, onmove, side = 0, orientation: ori, context, legal_moves, config } = $props()
+let {
+	board,
+	onmove,
+	side = 0,
+	orientation: ori,
+	context,
+	legal_moves,
+	config,
+	highlighted_squares,
+} = $props()
 /** @type {HTMLCanvasElement} */
 let board_canvas
 /** @type {HTMLCanvasElement} */
@@ -65,44 +75,73 @@ let selected_piece = {
 	},
 }
 
-let width = 600
-let height = 600
-let SQ = width / 8
-let piece_set = 'merida'
+let width = $state(0)
+let height = $derived(width)
+let SQ = $derived(width / 8)
 let mounted = $state(false)
 
 $effect(() => {
-	if (mounted) {
-		draw_board()
-		pctx.clearRect(0, 0, pieces_canvas.width, pieces_canvas.height)
-		for (let sq = 0; sq < board.length; ++sq)
-			if (board[sq] != 0) draw_piece(pctx, sq, images.get(board[sq]))
-	}
+	if (!mounted) return
+	draw_board(bctx)
 })
 
 $effect(() => {
-	if (config.highlight_last_move) {
-		if (mounted && context && context.moves && context.moves.length) {
-			let last_move = context.moves[context.moves.length - 1]
-			let [file, rank] = get_file_and_rank(last_move.from)
-			draw_square(
-				file,
-				rank,
-				hightlighted_square_color(square_color(last_move.from), config.colors.last_move)
-			)
-			;[file, rank] = get_file_and_rank(last_move.to)
-			draw_square(
-				file,
-				rank,
-				hightlighted_square_color(square_color(last_move.to), config.colors.last_move)
-			)
-		}
-	} else {
-		// unhighlight move when highlight_last_move is unchecked
+	if (!mounted) return
+	let promises = []
+	for (let piece = 1; piece <= 6; piece++) {
+		promises.push(load_image_for_piece(config.piece_set, Color.white * piece))
+		promises.push(load_image_for_piece(config.piece_set, Color.black * piece))
 	}
+	Promise.all(promises)
+		.then(imgs => imgs.forEach(({ piece, image }) => images.set(piece, image)))
+		.then(() => {
+			pctx.clearRect(0, 0, pieces_canvas.width, pieces_canvas.height)
+			for (let sq = 0; sq < board.length; ++sq)
+				if (board[sq] != 0) draw_piece(pctx, sq, images.get(board[sq]))
+		})
 })
 
-onMount(async () => {
+// $effect(() => {
+// 	if (config.highlight_last_move) {
+// 		if (mounted && context && context.moves && context.moves.length) {
+// 			let last_move = context.moves[context.moves.length - 1]
+// 			let [file, rank] = get_file_and_rank(last_move.from)
+// 			draw_square(
+// 				file,
+// 				rank,
+// 				hightlighted_square_color(square_color(last_move.from), config.colors.last_move)
+// 			)
+// 			;[file, rank] = get_file_and_rank(last_move.to)
+// 			draw_square(
+// 				file,
+// 				rank,
+// 				hightlighted_square_color(square_color(last_move.to), config.colors.last_move)
+// 			)
+// 		}
+// 	} else {
+// 		// FIXME unhighlight move when highlight_last_move is unchecked
+// 	}
+// })
+
+// $effect(() => {
+// 	console.log(SQ)
+// 	console.log(width + '  ' + height)
+// })
+
+// $effect(() => {
+// 	if (mounted && highlighted_squares && highlighted_squares.length > 0) {
+// 		highlighted_squares.forEach(sq => {
+// 			let [file, rank] = get_file_and_rank(sq)
+// 			draw_square(
+// 				file,
+// 				rank,
+// 				hightlighted_square_color(square_color(sq), config.colors.selected_piece)
+// 			)
+// 		})
+// 	}
+// })
+
+onMount(() => {
 	let board_context2d = board_canvas.getContext('2d', { alpha: false })
 	let pieces_context2d = pieces_canvas.getContext('2d')
 	let dnd_context2d = dnd_canvas.getContext('2d')
@@ -112,19 +151,37 @@ onMount(async () => {
 	pctx = pieces_context2d
 	dnd_ctx = dnd_context2d
 
-	dnd_canvas.addEventListener('mousemove', onmousemove)
+	draw_board(bctx)
+	bctx.fillStyle = 'red'
+	bctx.fillRect(100, 100 ,100 ,100)
+
+	mounted = true
+
 	dnd_canvas.addEventListener('mousedown', onmousedown)
 	dnd_canvas.addEventListener('mouseup', onmouseup)
 
 	let promises = []
 	for (let piece = 1; piece <= 6; piece++) {
-		promises.push(load_image_for_piece(Color.white * piece))
-		promises.push(load_image_for_piece(Color.black * piece))
+		promises.push(load_image_for_piece('merida', Color.white * piece))
+		promises.push(load_image_for_piece('merida', Color.black * piece))
 	}
-	let imgs = await Promise.all(promises)
-	imgs.forEach(({ piece, image }) => images.set(piece, image))
+	Promise.all(promises)
+		.then(imgs => imgs.forEach(({ piece, image }) => images.set(piece, image)))
+		.then(() => mounted = true)
 
-	mounted = true
+	// mounted = true
+
+	const observer = new ResizeObserver(entries => {
+		// FIXME this triggers effect on each resize
+		// mb it's better to use debounce here
+		// width = pieces_canvas.clientWidth
+		width = board_canvas.clientWidth
+	})
+	observer.observe(board_canvas)
+
+	return () => {
+		observer.disconnect()
+	}
 })
 
 /** @param {MouseEvent} e */
@@ -142,10 +199,11 @@ function onmousedown({ offsetX: x, offsetY: y }) {
 			square,
 			image: images.get(piece),
 		}
-		selected_piece.square = null
+		// selected_piece.square = null
 		pctx.clearRect(Math.trunc(x / SQ) * SQ, Math.trunc(y / SQ) * SQ, SQ, SQ)
 		dnd_ctx.drawImage(dragging.image, x - SQ / 2, y - SQ / 2, SQ, SQ)
 	}
+	dnd_canvas.addEventListener('mousemove', onmousemove)
 }
 
 /** @param {MouseEvent} e */
@@ -157,6 +215,7 @@ function onmousemove({ offsetX: x, offsetY: y }) {
 
 /** @param {MouseEvent} e */
 function onmouseup({ offsetX: x, offsetY: y }) {
+	dnd_canvas.removeEventListener('mousemove', onmousemove)
 	if (pawn_promotion) {
 		let [file, rank] = get_file_and_rank_for_xy(x, y)
 		let square = rank * 8 + file
@@ -172,7 +231,7 @@ function onmouseup({ offsetX: x, offsetY: y }) {
 	let square = rank * 8 + file
 	if (!dragging) {
 		if (selected_piece.square && board[square] / board[selected_piece.square] <= 0) {
-			let move = {from: selected_piece.square, to: square}
+			let move = { from: selected_piece.square, to: square }
 			apply_move(move)
 		}
 		return
@@ -186,7 +245,6 @@ function onmouseup({ offsetX: x, offsetY: y }) {
 		let move = { from: dragging.square, to: square }
 		apply_move(move)
 		if (!pawn_promotion) draw_piece(pctx, dragging.square, dragging.image)
-
 		dragging = null
 		dnd_ctx.clearRect(0, 0, dnd_canvas.width, dnd_canvas.height)
 	}
@@ -197,8 +255,11 @@ function onmouseup({ offsetX: x, offsetY: y }) {
  * @param {number} [promotion_piece]
  */
 function apply_move(move, promotion_piece) {
-	let is_legal_move = legal_moves.findIndex(m => m.from == move.from && m.to == move.to) != -1
-	if (!is_legal_move) return
+	let is_legal_move = legal_moves.some(m => m.from == move.from && m.to == move.to)
+	if (!is_legal_move) {
+		selected_piece.square = null
+		return
+	}
 	if (!promotion_piece && util.is_pawn_promotion(move, board)) {
 		pawn_promotion = { move }
 		let [file, rank] = get_file_and_rank(move.from)
@@ -244,21 +305,23 @@ function draw_square(file, rank, fill_style) {
 	bctx.fillRect(file * SQ, rank * SQ, SQ, SQ)
 }
 
-/** @param {number} piece */
-function load_image_for_piece(piece) {
+/**
+ * @param {string} piece_set
+ * @param {number} piece
+ */
+function load_image_for_piece(piece_set, piece) {
 	let image = new Image()
 	return new Promise(resolve => {
-		image.onload = () => {
-			resolve({ piece, image })
-		}
-		image.src = get_piece_img_src(piece)
+		image.onload = () => resolve({ piece, image })
+		image.src = `/piece_sets/${piece_set}/${util.piece_id(piece)}.svg`
 	})
 }
 
-function draw_board() {
+/** * @param {CanvasRenderingContext2D} ctx */
+function draw_board(ctx) {
 	for (let s = 0; s < 64; ++s) {
-		bctx.fillStyle = square_color(s)
-		bctx.fillRect(
+		ctx.fillStyle = square_color(s)
+		ctx.fillRect(
 			(-ori * Math.floor(s / 8) + 3.5 * (ori + 1)) * SQ,
 			((s % 8) * ori - 3.5 * (ori - 1)) * SQ,
 			SQ,
@@ -316,24 +379,20 @@ function get_file_and_rank_for_xy(x, y) {
 	else file = 7 - file
 	return [file, rank]
 }
-
-/** @param {number} piece */
-function get_piece_img_src(piece) {
-	let letter = util.piece_letter(piece)
-	let color = piece > 0 ? 'w' : 'b'
-	return `/piece_sets/${piece_set}/${color}${letter}.svg`
-}
 </script>
 
 <div class="relative">
 	<!-- FIXME these z indexes don't work well with other things like board overlay, mb container stuff etc. -->
-	<canvas class="z-10 w-full" bind:this={board_canvas} {width} {height}></canvas>
-	<canvas class="absolute inset-0 z-20 w-full" bind:this={pieces_canvas} {width} {height}></canvas>
-	<canvas class="absolute inset-0 z-30 w-full" bind:this={dnd_canvas} {width} {height}></canvas>
+	<canvas class="z-10" bind:this={board_canvas} {width} {height}></canvas>
+	<canvas class="absolute inset-0 z-20" bind:this={pieces_canvas} {width} {height}></canvas>
+	<canvas class="absolute inset-0 z-30" bind:this={dnd_canvas} {width} {height}></canvas>
 </div>
 
 <style>
 canvas {
 	user-select: none;
+	width: 100%;
+	height: 100%;
+	display: block;
 }
 </style>

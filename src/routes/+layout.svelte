@@ -33,10 +33,10 @@ function toggle_about() {}
 {#if settings_visible}
 	<Container
 		title="Settings"
-		onclose={() => settings_visible = false}
+		onclose={() => (settings_visible = false)}
 		minwidth={400}
 		minheight={300}
-		width={400}
+		width={450}
 		top="center"
 		left="center"
 		resize="both"

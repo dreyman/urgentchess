@@ -22,6 +22,9 @@ let offering_draw = $state(false)
 let pending_rematch_offer = $state(false)
 let offering_rematch = $state(false)
 
+/**
+ * @enum {string}
+ */
 const p2p = {
 	resign: 'resign',
 	draw_offer: 'draw_offer',
@@ -43,6 +46,7 @@ $effect(() => {
 
 /** @param {Move} move */
 function onmove(move) {
+	p2p.resign = 'asd'
 	send_data({ move })
 }
 

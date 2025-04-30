@@ -21,10 +21,10 @@ export const board_themes = [
 	}
 ]
 
-export const piece_sets = ['wiki', 'merida', 'anarcandy', 'horsey']
+export const piece_sets = ['simple', 'merida', 'anarcandy', 'horsey']
 
 const default_theme = board_themes[0]
-const default_piece_set = piece_sets[0]
+const default_piece_set = piece_sets[1]
 
 const default_config = {
 	board: {

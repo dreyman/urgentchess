@@ -1,7 +1,6 @@
 <script>
 import { appconfig } from '$lib/app/appconfig.svelte'
 import SvgBoard from '$lib/components/SvgBoard.svelte'
-import CanvasBoard from '$lib/components/CanvasBoard.svelte'
 import Time from '$lib/components/Time.svelte'
 
 /** @type {{
@@ -11,9 +10,7 @@ import Time from '$lib/components/Time.svelte'
  * render?: string
 }}*/
 let { game, side = 0, onmove = () => {}, render = 'svg' } = $props()
-// let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
-let orientation = 1
-// let orientation = $state(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
+let orientation = $derived(side == 0 ? (Math.random() > 0.5 ? 1 : -1) : side)
 
 /** @param {Move} move */
 function on_board_move(move) {
@@ -39,15 +36,15 @@ function on_black_timeout() {
 <div class="flex flex-col items-end" class:flex-col-reverse={orientation == 1}>
 	{#key game}
 		{#if game.clock}
-		<Time
-			time={game.clock.time1}
-			ontimeout={on_white_timeout}
-			activebg={appconfig.board.colors.light}
-			inactivebg={appconfig.board.colors.dark}
-		/>
+			<Time
+				time={game.clock.time1}
+				ontimeout={on_white_timeout}
+				activebg={appconfig.board.colors.light}
+				inactivebg={appconfig.board.colors.dark}
+			/>
 		{/if}
 		<div class="w-full">
-			{#if render == 'canvas'}
+			<!-- {#if render == 'canvas'}
 				<CanvasBoard
 					board={game.board}
 					onmove={on_board_move}
@@ -57,25 +54,25 @@ function on_black_timeout() {
 					context={game.context}
 					config={appconfig.board}
 				></CanvasBoard>
-			{:else}
-				<SvgBoard
-					board={game.board}
-					onmove={on_board_move}
-					{side}
-					{orientation}
-					legal_moves={game.valid_moves}
-					context={game.context}
-					config={appconfig.board}
-				></SvgBoard>
-			{/if}
+			{:else} -->
+			<SvgBoard
+				board={game.board}
+				onmove={on_board_move}
+				{side}
+				{orientation}
+				legal_moves={game.valid_moves}
+				context={game.context}
+				config={appconfig.board}
+			></SvgBoard>
+			<!-- {/if} -->
 		</div>
 		{#if game.clock}
-		<Time
-			time={game.clock.time2}
-			ontimeout={on_black_timeout}
-			activebg={appconfig.board.colors.light}
-			inactivebg={appconfig.board.colors.dark}
-		/>
+			<Time
+				time={game.clock.time2}
+				ontimeout={on_black_timeout}
+				activebg={appconfig.board.colors.light}
+				inactivebg={appconfig.board.colors.dark}
+			/>
 		{/if}
 	{/key}
 </div>

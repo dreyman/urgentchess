@@ -39,9 +39,9 @@ function onmove(move) {}
 	minwidth={250}
 	width={600}
 	left="center"
-	top="center"
+	top="100px"
 >
-	<Game {game} {side} {onmove} render={appconfig.board.render} />
+	<Game {game} {side} {onmove} render="svg" />
 	{#if game.result_message != ''}
 		<div class="board-overlay">
 			<h1 class="board-message">{game.result_message}</h1>

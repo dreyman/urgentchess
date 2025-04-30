@@ -35,9 +35,9 @@ export const Piece = {
 	black_queen: -6,
 	white_king: 5,
 	black_king: -5,
-
 }
 
+/** @type {Record<string, number>} */
 const Square = {
 	a1: 0,
 	b1: 1,
@@ -196,7 +196,6 @@ export function get_king_moves(sq, b, oo = true, ooo = true) {
 	destinations.forEach(dest => {
 		if (empty_or_capture(b[dest], color) && safe(dest, b, color)) moves.push({ from: sq, to: dest })
 	})
-	// FIXME use context._in_check instead of safe(sq, b, color)
 	// castling
 	if (color == Color.white && sq == 4) {
 		// short castling
@@ -205,6 +204,7 @@ export function get_king_moves(sq, b, oo = true, ooo = true) {
 			b[Square.f1] == 0 &&
 			b[Square.g1] == 0 &&
 			b[Square.h1] == Piece.white_rook &&
+			// FIXME use context._in_check instead of safe(sq, b, color)
 			safe(sq, b, color) &&
 			safe(Square.f1, b, color) &&
 			safe(Square.g1, b, color)
@@ -218,6 +218,7 @@ export function get_king_moves(sq, b, oo = true, ooo = true) {
 			b[Square.c1] == 0 &&
 			b[Square.b1] == 0 &&
 			b[Square.a1] == Piece.white_rook &&
+			// FIXME use context._in_check instead of safe(sq, b, color)
 			safe(sq, b, color) &&
 			safe(Square.d1, b, color) &&
 			safe(Square.c1, b, color)
@@ -421,7 +422,6 @@ function find_next_in_rank(sq, b, piece, piece2 = 69) {
 		while (s % 8 != 7 && (b[s] == 0 || b[s] == color * Piece.king)) s++
 		if (b[s] == piece || b[s] == piece2) return s
 	}
-
 	return -1
 }
 
@@ -463,7 +463,7 @@ function king_squares(sq) {
  * @param {number} sq square
  * @returns {number[]}
  */
-function knight_squares(sq) {
+export function knight_squares(sq) {
 	let squares = []
 	let dest = sq + 10
 	if (dest < 64 && sq % 8 != 7 && (sq + 2) % 8 != 0) squares.push(dest)
@@ -562,7 +562,7 @@ export function file_pin(sq, b) {
 	// check if there are no pieces between the given square and the king
 	let k = sq > king_sq ? -8 : 8
 	let s = sq + k
-	// checking [0, 64] boundaries is not necessary here, just checking for now to avoid infite loop if there's a bug
+	// checking [0, 64] boundaries is not necessary here, just checking for now to avoid infinite loop if there's a bug
 	while (s != king_sq && s >= 0 && s < 64) {
 		if (b[s] != 0) return false
 		s += k
@@ -645,7 +645,6 @@ export function get_rook_moves(sq, b, scope = {}) {
 	let color = b[sq] > 0 ? Color.white : Color.black
 	let pinned_to_rank = rank_pin(sq, b)
 	let pinned_to_file = file_pin(sq, b)
-	// scope = square | rank | file | diag
 	if (pinned_to_rank && scope.rank) return []
 	if (pinned_to_file && scope.file) return []
 

@@ -28,13 +28,16 @@ let el
 /** @type {HTMLElement} */ // svelte-ignore non_reactive_update
 let header
 let dragging = $state(false)
+let mounted = $state(false)
 
 $effect(() => {
-	// FIXME when width/height isn't set in props then 'center' doesn't work propery
-	if (left == 'center') el.style.left = innerWidth.current / 2 - el.clientWidth / 2 + 'px'
-	else if (left) el.style.left = left
-	if (top == 'center') el.style.top = innerHeight.current / 2 - el.clientHeight / 2 + 'px'
-	else if (top) el.style.top = top
+	if (mounted) {
+		// FIXME when width/height isn't set in props then 'center' doesn't work propery
+		if (left == 'center') el.style.left = innerWidth.current / 2 - el.clientWidth / 2 + 'px'
+		else if (left) el.style.left = left
+		if (top == 'center') el.style.top = innerHeight.current / 2 - el.clientHeight / 2 + 'px'
+		else if (top) el.style.top = top
+	}
 })
 
 onMount(() => {
@@ -42,6 +45,7 @@ onMount(() => {
 	if (minwidth) el.style.minWidth = minwidth + 'px'
 	if (minheight) el.style.minHeight = minheight + 'px'
 	else el.style.minHeight = 'fit-content'
+	mounted = true
 })
 
 /** @param {HTMLElement} el */

@@ -211,11 +211,11 @@ export function get_enpassant_capture_sq(m, b) {
  * @returns {string}
  */
 export function piece_id(piece) {
-	return (color(piece) == Color.white ? 'w' : 'b') + get_piece_letter(piece)
+	return (color(piece) == Color.white ? 'w' : 'b') + piece_letter(piece)
 }
 
 /** @param {number} piece */
-export function get_piece_letter(piece) {
+export function piece_letter(piece) {
 	switch (Math.abs(piece)) {
 		case P.king:
 			return 'K'
