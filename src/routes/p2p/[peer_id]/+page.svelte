@@ -144,8 +144,8 @@ function get_game_from_data(game_data) {
 			<Container
 				{title}
 				resize="horizontal"
-				minwidth={100}
-				width={400}
+				minwidth={250}
+				width={600}
 				height="auto"
 				left="center"
 				top="center"

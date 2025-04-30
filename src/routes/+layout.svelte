@@ -23,7 +23,6 @@ function toggle_about() {}
 		<li><button onclick={toggle_settings}>Settings</button></li>
 		<li><button onclick={toggle_about}>About</button></li>
 		<li><a href="#/random-game">Random game</a></li>
-		<li><a href="#/playground">Playground</a></li>
 	</ul>
 </header>
 
